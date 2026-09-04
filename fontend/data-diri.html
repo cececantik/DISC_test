@@ -18,33 +18,35 @@
 
     <style>
       body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-family: "Plus Jakarta Sans", sans-serif;
       }
       .brand-purple {
-        color: #6D28D9;
+        color: #6d28d9;
       }
       .bg-brand-purple {
-        background-color: #6D28D9;
+        background-color: #6d28d9;
       }
       .bg-brand-purple:hover {
-        background-color: #5B21B6;
+        background-color: #5b21b6;
       }
       /* Custom Radio styling */
       input[type="radio"]:checked + span {
-        border-color: #6D28D9;
+        border-color: #6d28d9;
       }
       input[type="radio"]:checked + span::after {
-        content: '';
+        content: "";
         width: 8px;
         height: 8px;
-        background-color: #6D28D9;
+        background-color: #6d28d9;
         border-radius: 50%;
         position: absolute;
       }
     </style>
   </head>
 
-  <body class="bg-slate-100 min-h-screen flex items-center justify-center p-0 sm:p-4 text-slate-800">
+  <body
+    class="bg-slate-100 min-h-screen flex items-center justify-center p-0 sm:p-4 text-slate-800"
+  >
     <!-- Main Mobile Container -->
     <div
       class="w-full max-w-sm min-h-screen sm:min-h-[660px] sm:h-auto bg-white sm:rounded-3xl shadow-xl sm:border sm:border-slate-100 px-6 py-6 flex flex-col justify-between"
@@ -74,17 +76,33 @@
 
         <!-- Title & Subtitle -->
         <div class="mt-4">
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Data Diri</h1>
-          <p class="text-xs text-slate-500 mt-1">Isi data diri kamu terlebih dahulu</p>
+          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
+            Data Diri
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">
+            Isi data diri kamu terlebih dahulu
+          </p>
         </div>
 
         <!-- Form Content -->
         <form id="formDataDiri" class="mt-6 space-y-4">
           <!-- Input 1: Nama Lengkap -->
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            <div
+              class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
               </svg>
             </div>
             <input
@@ -99,9 +117,21 @@
 
           <!-- Input 2: Pendidikan Terakhir -->
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+            <div
+              class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"
+                />
               </svg>
             </div>
             <select
@@ -110,7 +140,9 @@
               required
               class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition appearance-none cursor-pointer"
             >
-              <option value="" disabled selected class="text-slate-400">Pendidikan Terakhir</option>
+              <option value="" disabled selected class="text-slate-400">
+                Pendidikan Terakhir
+              </option>
               <option value="SMA/SMK Sederajat">SMA / SMK Sederajat</option>
               <option value="Diploma (D3/D4)">Diploma (D3 / D4)</option>
               <option value="Sarjana (S1)">Sarjana (S1)</option>
@@ -118,18 +150,42 @@
               <option value="Doktor (S3)">Doktor (S3)</option>
               <option value="Lainnya">Lainnya</option>
             </select>
-            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            <div
+              class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </div>
           </div>
 
           <!-- Input 3: Pekerjaan / Jabatan -->
           <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.111 48.111 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0" />
+            <div
+              class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.111 48.111 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"
+                />
               </svg>
             </div>
             <input
@@ -149,7 +205,9 @@
             </label>
             <div class="flex items-center gap-6">
               <!-- Radio Laki-laki -->
-              <label class="flex items-center gap-2.5 cursor-pointer select-none group">
+              <label
+                class="flex items-center gap-2.5 cursor-pointer select-none group"
+              >
                 <input
                   type="radio"
                   name="jenis_kelamin"
@@ -162,13 +220,17 @@
                 >
                   <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
                 </span>
-                <span class="text-xs sm:text-sm text-slate-700 group-hover:text-slate-900 font-medium">
+                <span
+                  class="text-xs sm:text-sm text-slate-700 group-hover:text-slate-900 font-medium"
+                >
                   Laki-laki
                 </span>
               </label>
 
               <!-- Radio Perempuan -->
-              <label class="flex items-center gap-2.5 cursor-pointer select-none group">
+              <label
+                class="flex items-center gap-2.5 cursor-pointer select-none group"
+              >
                 <input
                   type="radio"
                   name="jenis_kelamin"
@@ -180,7 +242,9 @@
                 >
                   <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
                 </span>
-                <span class="text-xs sm:text-sm text-slate-700 group-hover:text-slate-900 font-medium">
+                <span
+                  class="text-xs sm:text-sm text-slate-700 group-hover:text-slate-900 font-medium"
+                >
                   Perempuan
                 </span>
               </label>
@@ -212,64 +276,69 @@
 
     <!-- Scripts -->
     <script>
+      const form = document.getElementById('formDataDiri');
       const btnSubmit = document.getElementById('btnSubmit');
       const toastAlert = document.getElementById('toastAlert');
       const toastMsg = document.getElementById('toastMsg');
       const toastIcon = document.getElementById('toastIcon');
 
       // Load saved profile if exists
-      window.addEventListener('DOMContentLoaded', () => {
+      window.addEventListener("DOMContentLoaded", () => {
         try {
-          const savedData = localStorage.getItem('disc_user_profile');
+          const savedData = localStorage.getItem("disc_user_profile");
           if (savedData) {
             const data = JSON.parse(savedData);
             if (data.nama) document.getElementById('nama').value = data.nama;
             if (data.pendidikan) document.getElementById('pendidikan').value = data.pendidikan;
             if (data.pekerjaan) document.getElementById('pekerjaan').value = data.pekerjaan;
+            if (data.organisasi) document.getElementById('organisasi').value = data.organisasi;
             if (data.jenis_kelamin) {
-              const radio = document.querySelector(`input[name="jenis_kelamin"][value="${data.jenis_kelamin}"]`);
+              const radio = document.querySelector(
+                `input[name="jenis_kelamin"][value="${data.jenis_kelamin}"]`,
+              );
               if (radio) radio.checked = true;
             }
           }
         } catch (e) {
-          console.error('Error loading saved profile:', e);
+          console.error("Error loading saved profile:", e);
         }
       });
 
-      function showToast(msg, icon = '⚠️', isSuccess = false) {
+      function showToast(msg, icon = "⚠️", isSuccess = false) {
         toastMsg.textContent = msg;
         toastIcon.textContent = icon;
         if (isSuccess) {
-          toastAlert.classList.remove('bg-slate-900');
-          toastAlert.classList.add('bg-emerald-700');
+          toastAlert.classList.remove("bg-slate-900");
+          toastAlert.classList.add("bg-emerald-700");
         } else {
-          toastAlert.classList.add('bg-slate-900');
-          toastAlert.classList.remove('bg-emerald-700');
+          toastAlert.classList.add("bg-slate-900");
+          toastAlert.classList.remove("bg-emerald-700");
         }
-        toastAlert.classList.remove('translate-y-20', 'opacity-0');
+        toastAlert.classList.remove("translate-y-20", "opacity-0");
         setTimeout(() => {
-          toastAlert.classList.add('translate-y-20', 'opacity-0');
+          toastAlert.classList.add("translate-y-20", "opacity-0");
         }, 3000);
       }
 
-      btnSubmit.addEventListener('click', (e) => {
+      btnSubmit.addEventListener("click", (e) => {
         e.preventDefault();
 
         const nama = document.getElementById('nama').value.trim();
         const pendidikan = document.getElementById('pendidikan').value;
         const pekerjaan = document.getElementById('pekerjaan').value.trim();
+        const organisasi = document.getElementById('organisasi').value.trim();
         const jenisKelaminEl = document.querySelector('input[name="jenis_kelamin"]:checked');
         const jenis_kelamin = jenisKelaminEl ? jenisKelaminEl.value : '';
 
         if (!nama) {
-          showToast('Silakan masukkan Nama Lengkap kamu.');
-          document.getElementById('nama').focus();
+          showToast("Silakan masukkan Nama Lengkap kamu.");
+          document.getElementById("nama").focus();
           return;
         }
 
         if (!pendidikan) {
-          showToast('Silakan pilih Pendidikan Terakhir.');
-          document.getElementById('pendidikan').focus();
+          showToast("Silakan pilih Pendidikan Terakhir.");
+          document.getElementById("pendidikan").focus();
           return;
         }
 
@@ -279,27 +348,36 @@
           return;
         }
 
+        if (!organisasi) {
+          showToast('Silakan masukkan Organisasi / Instansi.');
+          document.getElementById('organisasi').focus();
+          return;
+        }
+
         // Save to localStorage
         const profileData = {
           nama,
           pendidikan,
           pekerjaan,
-    
+          organisasi,
           jenis_kelamin,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
 
         try {
-          localStorage.setItem('disc_user_profile', JSON.stringify(profileData));
+          localStorage.setItem(
+            "disc_user_profile",
+            JSON.stringify(profileData),
+          );
         } catch (err) {
-          console.error('Failed to save to localStorage:', err);
+          console.error("Failed to save to localStorage:", err);
         }
 
-        showToast('Data diri berhasil disimpan! Memulai tes...', '✅', true);
+        showToast("Data diri berhasil disimpan! Memulai tes...", "✅", true);
 
         // Redirect to test.html (Halaman Pertanyaan/Soal)
         setTimeout(() => {
-          window.location.href = './test.html';
+          window.location.href = 'test.html';
         }, 600);
       });
     </script>
