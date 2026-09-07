@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hasil Review DISC Test</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-100 min-h-screen flex items-center justify-center p-0 sm:p-4 text-slate-800">
+    <!-- Main Mobile Container -->
+    <div
+      class="w-full max-w-md min-h-screen sm:min-h-auto bg-white sm:rounded-3xl shadow-xl sm:border sm:border-slate-100 px-6 py-8 flex flex-col justify-between"
+    >
+      <div>
+        <!-- Header Title -->
+        <div class="text-center mb-6">
+          <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+            Tes Selesai 🎉
+          </span>
+          <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-3">
+            Hasil Analisis DISC
+          </h1>
+          <p id="participantName" class="text-xs sm:text-sm text-slate-500 mt-1">
+            Memuat data peserta...
+          </p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="py-12 text-center">
+          <div class="inline-block w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+          <p class="text-xs text-slate-400 mt-3">Sedang menghitung skor grafis DISC...</p>
+        </div>
+
+        <!-- Result Container (Hidden by default until loaded) -->
+        <div id="resultContainer" class="space-y-6 hidden">
+          <!-- Dominant Profile Card -->
+          <div class="bg-purple-50 border border-purple-100 rounded-2xl p-5 text-center">
+            <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Tipe Kepribadian Utama</span>
+            <h2 id="dominantProfile" class="text-3xl font-black text-purple-900 mt-1">-</h2>
+            <p id="profileDescription" class="text-xs text-slate-600 mt-2 leading-relaxed px-2">
+              Deskripsi kepribadian akan muncul di sini.
+            </p>
+          </div>
+
+          <!-- Skor Detail Cards -->
+          <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 block">D</span>
+              <span id="scoreD" class="text-lg font-extrabold text-slate-900">0</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 block">I</span>
+              <span id="scoreI" class="text-lg font-extrabold text-slate-900">0</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 block">S</span>
+              <span id="scoreS" class="text-lg font-extrabold text-slate-900">0</span>
+            </div>
+            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
+              <span class="text-[10px] font-bold text-slate-400 block">C</span>
+              <span id="scoreC" class="text-lg font-extrabold text-slate-900">0</span>
+            </div>
+          </div>
+
+          <!-- Custom Number Note (If applicable) -->
+          <div id="customNoteContainer" class="hidden bg-amber-50 border border-amber-200 text-amber-800 text-xs p-3.5 rounded-xl">
+            <span class="font-bold">Catatan Grafik:</span> Terdapat penyesuaian nomor grafik custom berdasarkan pola jawaban di luar rentang standar.
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="pt-8">
+        <button
+          type="button"
+          onclick="window.location.href='index.html'"
+          class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition-all duration-200 active:scale-[0.98] flex items-center justify-center text-center cursor-pointer"
+        >
+          Selesai & Kembali ke Beranda
+        </button>
+      </div>
+    </div>
+
+    <!-- Script Review & Fetch API -->
+    <script>
+      const API_URL = 'http://localhost:3000/api';
+
+      window.addEventListener('DOMContentLoaded', async () => {
+        const attempt_id = localStorage.getItem('attempt_id');
+
+        if (!attempt_id) {
+          alert('Sesi tes tidak ditemukan. Silakan mulai dari awal.');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        try {
+          // Panggil endpoint review atau hasil tes dari backend
+          const response = await fetch(`${API_URL}/review/${attempt_id}`);
+          const result = await response.json();
+
+          document.getElementById('loadingState').classList.add('hidden');
+          document.getElementById('resultContainer').classList.remove('hidden');
+
+          if (result.success) {
+            const data = result.data;
+            document.getElementById('participantName').textContent = `Hasil untuk: ${data.nama_lengkap || 'Peserta'}`;
+            
+            // Tampilkan skor DISC
+            document.getElementById('scoreD').textContent = data.score_d || 0;
+            document.getElementById('scoreI').textContent = data.score_i || 0;
+            document.getElementById('scoreS').textContent = data.score_s || 0;
+            document.getElementById('scoreC').textContent = data.score_c || 0;
+
+            document.getElementById('dominantProfile').textContent = data.dominant_type || 'D';
+            document.getElementById('profileDescription').textContent = data.description || 'Analisis kepribadian selesai.';
+
+            if (data.is_custom) {
+              document.getElementById('customNoteContainer').classList.remove('hidden');
+            }
+          } else {
+            alert('Gagal memuat hasil: ' + result.message);
+          }
+        } catch (err) {
+          console.error(err);
+          document.getElementById('loadingState').innerHTML = '<p class="text-xs text-red-500">Gagal terhubung ke server backend saat memuat hasil.</p>';
+        }
+      });
+    </script>
+  </body>
+</html>

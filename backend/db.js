@@ -1,19 +1,20 @@
 const mysql = require("mysql2");
 
-const db = mysql.createConnection({
+// Menggunakan promise agar bisa menggunakan await di server.js
+const db = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "",
   database: "disc_test",
-});
+}).promise();
 
-db.connect((err) => {
-  if (err) {
+// Cek koneksi
+db.query("SELECT 1")
+  .then(() => {
+    console.log("MySQL berhasil terhubung!");
+  })
+  .catch((err) => {
     console.error("Koneksi database gagal:", err);
-    return;
-  }
-
-  console.log("MySQL berhasil terhubung!");
-});
+  });
 
 module.exports = db;

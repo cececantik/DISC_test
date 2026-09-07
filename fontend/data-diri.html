@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Form Data Diri - DISC Test</title>
+    <title>Data Diri - DISC Test</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -28,18 +28,6 @@
       }
       .bg-brand-purple:hover {
         background-color: #5b21b6;
-      }
-      /* Custom Radio styling */
-      input[type="radio"]:checked + span {
-        border-color: #6d28d9;
-      }
-      input[type="radio"]:checked + span::after {
-        content: "";
-        width: 8px;
-        height: 8px;
-        background-color: #6d28d9;
-        border-radius: 50%;
-        position: absolute;
       }
     </style>
   </head>
@@ -76,177 +64,104 @@
 
         <!-- Title & Subtitle -->
         <div class="mt-4">
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">
-            Data Diri
+          <span class="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-100">
+            Langkah 1 dari 2
+          </span>
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-2">
+            Data Diri Peserta
           </h1>
           <p class="text-xs text-slate-500 mt-1">
-            Isi data diri kamu terlebih dahulu
+            Isi data diri kamu terlebih dahulu sebelum mulai tes.
           </p>
         </div>
 
         <!-- Form Content -->
-        <form id="formDataDiri" class="mt-6 space-y-4">
+        <form id="formDataDiri" class="mt-5 space-y-3.5">
           <!-- Input 1: Nama Lengkap -->
           <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="1.8"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
               </svg>
             </div>
             <input
               type="text"
               id="nama"
-              name="nama"
               required
-              placeholder="Nama Lengkap"
-              class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition"
+              placeholder="Nama Lengkap *"
+              class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition"
             />
           </div>
 
-          <!-- Input 2: Pendidikan Terakhir -->
+          <!-- Input 2: Umur -->
           <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="1.8"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"
-                />
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <input
+              type="number"
+              id="umur"
+              placeholder="Umur (Tahun)"
+              class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition"
+            />
+          </div>
+
+          <!-- Input 3: Pendidikan Terakhir -->
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/>
               </svg>
             </div>
             <select
               id="pendidikan"
-              name="pendidikan"
-              required
-              class="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition appearance-none cursor-pointer"
+              class="w-full pl-11 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition appearance-none cursor-pointer"
             >
               <option value="" disabled selected class="text-slate-400">
                 Pendidikan Terakhir
               </option>
-              <option value="SMA/SMK Sederajat">SMA / SMK Sederajat</option>
-              <option value="Diploma (D3/D4)">Diploma (D3 / D4)</option>
+              <option value="SMA / SMK Sederajat">SMA / SMK Sederajat</option>
+              <option value="Diploma (D3 / D4)">Diploma (D3 / D4)</option>
               <option value="Sarjana (S1)">Sarjana (S1)</option>
               <option value="Magister (S2)">Magister (S2)</option>
               <option value="Doktor (S3)">Doktor (S3)</option>
               <option value="Lainnya">Lainnya</option>
             </select>
-            <div
-              class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
+            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
           </div>
 
-          <!-- Input 3: Pekerjaan / Jabatan -->
+          <!-- Input 4: Pekerjaan / Jabatan -->
           <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                stroke-width="1.8"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.111 48.111 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"
-                />
+            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.111 48.111 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/>
               </svg>
             </div>
             <input
               type="text"
               id="pekerjaan"
-              name="pekerjaan"
-              required
               placeholder="Pekerjaan / Jabatan"
-              class="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition"
+              class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition"
             />
           </div>
 
           <!-- Section: Jenis Kelamin -->
-          <div class="pt-2">
+          <div class="pt-1">
             <label class="block text-xs font-semibold text-slate-700 mb-2">
               Jenis Kelamin
             </label>
             <div class="flex items-center gap-6">
-              <!-- Radio Laki-laki -->
-              <label
-                class="flex items-center gap-2.5 cursor-pointer select-none group"
-              >
-                <input
-                  type="radio"
-                  name="jenis_kelamin"
-                  value="Laki-laki"
-                  checked
-                  class="sr-only peer"
-                />
-                <span
-                  class="w-4 h-4 rounded-full border-2 border-slate-300 peer-checked:border-[#6D28D9] peer-checked:bg-[#6D28D9] flex items-center justify-center transition"
-                >
-                  <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                </span>
-                <span
-                  class="text-xs sm:text-sm text-slate-700 group-hover:text-slate-900 font-medium"
-                >
-                  Laki-laki
-                </span>
+              <label class="flex items-center gap-2.5 cursor-pointer select-none group">
+                <input type="radio" name="jenis_kelamin" value="Laki-laki" checked class="w-4 h-4 text-purple-600 cursor-pointer">
+                <span class="text-xs sm:text-sm text-slate-700 font-medium">Laki-laki</span>
               </label>
-
-              <!-- Radio Perempuan -->
-              <label
-                class="flex items-center gap-2.5 cursor-pointer select-none group"
-              >
-                <input
-                  type="radio"
-                  name="jenis_kelamin"
-                  value="Perempuan"
-                  class="sr-only peer"
-                />
-                <span
-                  class="w-4 h-4 rounded-full border-2 border-slate-300 peer-checked:border-[#6D28D9] peer-checked:bg-[#6D28D9] flex items-center justify-center transition"
-                >
-                  <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                </span>
-                <span
-                  class="text-xs sm:text-sm text-slate-700 group-hover:text-slate-900 font-medium"
-                >
-                  Perempuan
-                </span>
+              <label class="flex items-center gap-2.5 cursor-pointer select-none group">
+                <input type="radio" name="jenis_kelamin" value="Perempuan" class="w-4 h-4 text-purple-600 cursor-pointer">
+                <span class="text-xs sm:text-sm text-slate-700 font-medium">Perempuan</span>
               </label>
             </div>
           </div>
@@ -254,13 +169,13 @@
       </div>
 
       <!-- Bottom Action Button -->
-      <div class="pt-6 pb-2">
+      <div class="pt-4 pb-2">
         <button
           type="button"
           id="btnSubmit"
-          class="w-full bg-[#6D28D9] hover:bg-[#5B21B6] text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-purple-200 transition-all duration-200 active:scale-[0.98] flex items-center justify-center text-center cursor-pointer"
+          class="w-full bg-[#6D28D9] hover:bg-[#5B21B6] text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-purple-200 transition-all duration-200 active:scale-[0.98] flex items-center justify-center text-center cursor-pointer"
         >
-          Lanjut
+          Mulai Tes Sekarang
         </button>
       </div>
     </div>
@@ -271,114 +186,80 @@
       class="fixed bottom-6 inset-x-4 max-w-sm mx-auto bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50"
     >
       <span id="toastIcon">⚠️</span>
-      <span id="toastMsg">Harap isi semua data dengan lengkap.</span>
+      <span id="toastMsg">Harap isi nama lengkap.</span>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts Integrasi Backend -->
     <script>
-      const form = document.getElementById('formDataDiri');
+      const API_URL = 'http://localhost:3000/api';
       const btnSubmit = document.getElementById('btnSubmit');
       const toastAlert = document.getElementById('toastAlert');
       const toastMsg = document.getElementById('toastMsg');
       const toastIcon = document.getElementById('toastIcon');
 
-      // Load saved profile if exists
-      window.addEventListener("DOMContentLoaded", () => {
-        try {
-          const savedData = localStorage.getItem("disc_user_profile");
-          if (savedData) {
-            const data = JSON.parse(savedData);
-            if (data.nama) document.getElementById('nama').value = data.nama;
-            if (data.pendidikan) document.getElementById('pendidikan').value = data.pendidikan;
-            if (data.pekerjaan) document.getElementById('pekerjaan').value = data.pekerjaan;
-            if (data.organisasi) document.getElementById('organisasi').value = data.organisasi;
-            if (data.jenis_kelamin) {
-              const radio = document.querySelector(
-                `input[name="jenis_kelamin"][value="${data.jenis_kelamin}"]`,
-              );
-              if (radio) radio.checked = true;
-            }
-          }
-        } catch (e) {
-          console.error("Error loading saved profile:", e);
-        }
-      });
-
-      function showToast(msg, icon = "⚠️", isSuccess = false) {
+      function showToast(msg, icon = "⚠️") {
         toastMsg.textContent = msg;
         toastIcon.textContent = icon;
-        if (isSuccess) {
-          toastAlert.classList.remove("bg-slate-900");
-          toastAlert.classList.add("bg-emerald-700");
-        } else {
-          toastAlert.classList.add("bg-slate-900");
-          toastAlert.classList.remove("bg-emerald-700");
-        }
         toastAlert.classList.remove("translate-y-20", "opacity-0");
         setTimeout(() => {
           toastAlert.classList.add("translate-y-20", "opacity-0");
-        }, 3000);
+        }, 2500);
       }
 
-      btnSubmit.addEventListener("click", (e) => {
+      btnSubmit.addEventListener("click", async (e) => {
         e.preventDefault();
 
-        const nama = document.getElementById('nama').value.trim();
-        const pendidikan = document.getElementById('pendidikan').value;
+        const nama_lengkap = document.getElementById('nama').value.trim();
+        const umur = document.getElementById('umur').value;
+        const pendidikan_terakhir = document.getElementById('pendidikan').value;
         const pekerjaan = document.getElementById('pekerjaan').value.trim();
-        const organisasi = document.getElementById('organisasi').value.trim();
-        const jenisKelaminEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-        const jenis_kelamin = jenisKelaminEl ? jenisKelaminEl.value : '';
+        const jenis_kelamin = document.querySelector('input[name="jenis_kelamin"]:checked').value;
 
-        if (!nama) {
+        if (!nama_lengkap) {
           showToast("Silakan masukkan Nama Lengkap kamu.");
           document.getElementById("nama").focus();
           return;
         }
 
-        if (!pendidikan) {
-          showToast("Silakan pilih Pendidikan Terakhir.");
-          document.getElementById("pendidikan").focus();
-          return;
-        }
-
-        if (!pekerjaan) {
-          showToast('Silakan masukkan Pekerjaan / Jabatan.');
-          document.getElementById('pekerjaan').focus();
-          return;
-        }
-
-        if (!organisasi) {
-          showToast('Silakan masukkan Organisasi / Instansi.');
-          document.getElementById('organisasi').focus();
-          return;
-        }
-
-        // Save to localStorage
-        const profileData = {
-          nama,
-          pendidikan,
-          pekerjaan,
-          organisasi,
-          jenis_kelamin,
-          updatedAt: new Date().toISOString(),
-        };
-
         try {
-          localStorage.setItem(
-            "disc_user_profile",
-            JSON.stringify(profileData),
-          );
+          btnSubmit.disabled = true;
+          btnSubmit.textContent = 'Menyimpan...';
+
+          // Kirim data ke backend Node.js (/api/start-test)
+          const response = await fetch(`${API_URL}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nama_lengkap,
+              umur: umur ? parseInt(umur) : null,
+              jenis_kelamin,
+              pendidikan_terakhir: pendidikan_terakhir || null,
+              pekerjaan: pekerjaan || null
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Simpan attempt_id dan user_id ke localStorage untuk dibawa ke test.html
+            localStorage.setItem('attempt_id', result.attempt_id);
+            localStorage.setItem('user_id', result.user_id);
+
+            showToast("Berhasil! Memulai tes...", "✅");
+            setTimeout(() => {
+              window.location.href = 'test.html';
+            }, 500);
+          } else {
+            showToast('Gagal memulai sesi: ' + result.message);
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Mulai Tes Sekarang';
+          }
         } catch (err) {
-          console.error("Failed to save to localStorage:", err);
+          console.error(err);
+          showToast('Terjadi kesalahan koneksi ke server.');
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Mulai Tes Sekarang';
         }
-
-        showToast("Data diri berhasil disimpan! Memulai tes...", "✅", true);
-
-        // Redirect to test.html (Halaman Pertanyaan/Soal)
-        setTimeout(() => {
-          window.location.href = 'test.html';
-        }, 600);
       });
     </script>
   </body>
