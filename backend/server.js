@@ -1,15 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
+const graphRoutes = require("./routes_graph");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(graphRoutes);
 
-// ==========================================
 // 1. ENDPOINT UNTUK MENAMPILKAN SOAL KE test.html
-// ==========================================
 app.get("/api/questions", async (req, res) => {
   try {
     const [questions] = await db.query(
