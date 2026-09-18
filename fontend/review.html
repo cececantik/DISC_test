@@ -59,29 +59,65 @@
             </p>
           </div>
 
-          <!-- Skor Detail Cards -->
-          <div class="grid grid-cols-4 gap-2 text-center">
-            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
-              <span class="text-[10px] font-bold text-slate-400 block">D</span>
-              <span id="scoreD" class="text-lg font-extrabold text-slate-900">0</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
-              <span class="text-[10px] font-bold text-slate-400 block">I</span>
-              <span id="scoreI" class="text-lg font-extrabold text-slate-900">0</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
-              <span class="text-[10px] font-bold text-slate-400 block">S</span>
-              <span id="scoreS" class="text-lg font-extrabold text-slate-900">0</span>
-            </div>
-            <div class="bg-slate-50 border border-slate-100 p-3 rounded-xl">
-              <span class="text-[10px] font-bold text-slate-400 block">C</span>
-              <span id="scoreC" class="text-lg font-extrabold text-slate-900">0</span>
-            </div>
+          <!-- Tabel Skor Lengkap: Most / Least / Change -->
+          <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-3">Rincian Skor</span>
+            <table class="w-full text-center text-sm">
+              <thead>
+                <tr class="text-slate-400 text-[11px] font-bold">
+                  <th class="text-left pb-2">&nbsp;</th>
+                  <th class="pb-2">D</th>
+                  <th class="pb-2">I</th>
+                  <th class="pb-2">S</th>
+                  <th class="pb-2">C</th>
+                  <th class="pb-2">*</th>
+                </tr>
+              </thead>
+              <tbody class="font-bold text-slate-900">
+                <tr class="border-t border-slate-200">
+                  <td class="text-left py-2 text-xs text-slate-500 font-semibold">Most</td>
+                  <td id="mostD">0</td><td id="mostI">0</td><td id="mostS">0</td><td id="mostC">0</td><td id="mostStar">0</td>
+                </tr>
+                <tr class="border-t border-slate-200">
+                  <td class="text-left py-2 text-xs text-slate-500 font-semibold">Least</td>
+                  <td id="leastD">0</td><td id="leastI">0</td><td id="leastS">0</td><td id="leastC">0</td><td id="leastStar">0</td>
+                </tr>
+                <tr class="border-t border-slate-200">
+                  <td class="text-left py-2 text-xs text-slate-500 font-semibold">Change</td>
+                  <td id="changeD">0</td><td id="changeI">0</td><td id="changeS">0</td><td id="changeC">0</td><td id="changeStar">0</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <!-- Custom Number Note (If applicable) -->
           <div id="customNoteContainer" class="hidden bg-amber-50 border border-amber-200 text-amber-800 text-xs p-3.5 rounded-xl">
             <span class="font-bold">Catatan Grafik:</span> Terdapat penyesuaian nomor grafik custom berdasarkan pola jawaban di luar rentang standar.
+          </div>
+
+          <!-- Grafik DISC (Mask / Pressure / Self) -->
+          <div id="graphSection" class="space-y-4">
+            <div id="graphLoading" class="text-center py-6">
+              <div class="inline-block w-6 h-6 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+              <p class="text-xs text-slate-400 mt-2">Membuat grafik DISC...</p>
+            </div>
+            <div id="graphError" class="hidden bg-red-50 border border-red-200 text-red-700 text-xs p-3.5 rounded-xl text-center">
+              Grafik tidak dapat dimuat. Pastikan graph service sedang berjalan.
+            </div>
+            <div id="graphImages" class="hidden space-y-3">
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3">
+                <img id="graphMask" class="w-full rounded-lg" alt="Grafik Mask (Public Self)" />
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3">
+                <img id="graphPressure" class="w-full rounded-lg" alt="Grafik Pressure (Private Self)" />
+              </div>
+              <div class="bg-slate-50 border border-slate-100 rounded-2xl p-3">
+                <img id="graphSelf" class="w-full rounded-lg" alt="Grafik Self (Core / Natural)" />
+              </div>
+              <div id="interpretationBox" class="bg-purple-50 border border-purple-100 rounded-2xl p-4 text-xs text-slate-700 leading-relaxed">
+                <span id="interpretationText"></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -112,7 +148,7 @@
         }
 
         try {
-          // Panggil endpoint review atau hasil tes dari backend
+          // 1. Ambil nama peserta + skor mentah
           const response = await fetch(`${API_URL}/review/${attempt_id}`);
           const result = await response.json();
 
@@ -122,12 +158,18 @@
           if (result.success) {
             const data = result.data;
             document.getElementById('participantName').textContent = `Hasil untuk: ${data.nama_lengkap || 'Peserta'}`;
-            
-            // Tampilkan skor DISC
-            document.getElementById('scoreD').textContent = data.score_d || 0;
-            document.getElementById('scoreI').textContent = data.score_i || 0;
-            document.getElementById('scoreS').textContent = data.score_s || 0;
-            document.getElementById('scoreC').textContent = data.score_c || 0;
+
+            // Isi tabel Most / Least / Change
+            const fillRow = (prefix, obj) => {
+              document.getElementById(`${prefix}D`).textContent = obj.D ?? 0;
+              document.getElementById(`${prefix}I`).textContent = obj.I ?? 0;
+              document.getElementById(`${prefix}S`).textContent = obj.S ?? 0;
+              document.getElementById(`${prefix}C`).textContent = obj.C ?? 0;
+              document.getElementById(`${prefix}Star`).textContent = obj.star ?? 0;
+            };
+            fillRow('most', data.most);
+            fillRow('least', data.least);
+            fillRow('change', data.change);
 
             document.getElementById('dominantProfile').textContent = data.dominant_type || 'D';
             document.getElementById('profileDescription').textContent = data.description || 'Analisis kepribadian selesai.';
@@ -141,6 +183,40 @@
         } catch (err) {
           console.error(err);
           document.getElementById('loadingState').innerHTML = '<p class="text-xs text-red-500">Gagal terhubung ke server backend saat memuat hasil.</p>';
+          return; // nggak perlu lanjut ambil grafik kalau data dasarnya aja gagal
+        }
+
+        // 2. Ambil 3 gambar grafik DISC (terpisah, biar kalau ini gagal
+        //    skor di atas tetap kelihatan)
+        try {
+          const graphRes = await fetch(`${API_URL}/graphs/${attempt_id}`);
+          const graphResult = await graphRes.json();
+
+          document.getElementById('graphLoading').classList.add('hidden');
+
+          if (graphRes.ok && graphResult.graphs) {
+            document.getElementById('graphMask').src =
+              `data:image/png;base64,${graphResult.graphs.mask.image_base64}`;
+            document.getElementById('graphPressure').src =
+              `data:image/png;base64,${graphResult.graphs.pressure.image_base64}`;
+            document.getElementById('graphSelf').src =
+              `data:image/png;base64,${graphResult.graphs.self.image_base64}`;
+
+            if (graphResult.interpretation && graphResult.interpretation.summary) {
+              document.getElementById('interpretationText').textContent =
+                graphResult.interpretation.summary;
+            } else {
+              document.getElementById('interpretationBox').classList.add('hidden');
+            }
+
+            document.getElementById('graphImages').classList.remove('hidden');
+          } else {
+            document.getElementById('graphError').classList.remove('hidden');
+          }
+        } catch (err) {
+          console.error('Gagal memuat grafik:', err);
+          document.getElementById('graphLoading').classList.add('hidden');
+          document.getElementById('graphError').classList.remove('hidden');
         }
       });
     </script>

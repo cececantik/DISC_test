@@ -128,6 +128,64 @@ app.post("/api/submit-test", async (req, res) => {
   }
 });
 
+// 2B. ENDPOINT UNTUK HALAMAN REVIEW (dipanggil review.html)
+// Mengembalikan nama peserta + skor mentah (BUKAN gambar grafik -
+// gambar grafik diambil terpisah lewat /api/graphs/:attempt_id)
+// ==========================================
+app.get("/api/review/:attempt_id", async (req, res) => {
+  const { attempt_id } = req.params;
+
+  try {
+    const [rows] = await db.query(
+      `SELECT r.*, u.nama_lengkap
+       FROM results r
+       JOIN attempts a ON r.attempt_id = a.id
+       JOIN users u ON a.user_id = u.id
+       WHERE r.attempt_id = ?`,
+      [attempt_id],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Hasil tes untuk attempt_id ini belum ditemukan.",
+      });
+    }
+
+    const r = rows[0];
+
+    // Trait dominan ditentukan dari skor "Self/Core" (change_*),
+    // sama seperti logic interpret_profile() di Python
+    const changeScores = { D: r.change_d, I: r.change_i, S: r.change_s, C: r.change_c };
+    const dominant_type = Object.keys(changeScores).reduce((a, b) =>
+      changeScores[a] >= changeScores[b] ? a : b,
+    );
+
+    res.json({
+      success: true,
+      data: {
+        nama_lengkap: r.nama_lengkap,
+        score_d: r.most_d,
+        score_i: r.most_i,
+        score_s: r.most_s,
+        score_c: r.most_c,
+        dominant_type,
+        is_custom: false,
+
+        most: { D: r.most_d, I: r.most_i, S: r.most_s, C: r.most_c, star: r.most_star },
+        least: { D: r.least_d, I: r.least_i, S: r.least_s, C: r.least_c, star: r.least_star },
+        change: { D: r.change_d, I: r.change_i, S: r.change_s, C: r.change_c, star: r.change_star },
+      },
+    });
+  } catch (error) {
+    console.error("Error saat mengambil data review:", error);
+    res.status(500).json({
+      success: false,
+      message: "Gagal memuat hasil review dari database.",
+    });
+  }
+});
+
 // ==========================================
 // 3. ENDPOINT UNTUK MENYIMPAN DATA DIRI & MEMBUAT ATTEMPT_ID
 // ==========================================
