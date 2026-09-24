@@ -2,10 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const db = require("./db");
 
-const {
-  getParticipants,
-  getParticipantDetail,
-} = require("./admin_controller");
+const { getParticipants, getParticipantDetail } = require("./admin_controller");
 
 const { getGraphs } = require("./graph_controller");
 
@@ -19,18 +16,12 @@ app.use(express.json());
 // ==========================================
 app.get("/api/admin/participants", getParticipants);
 
-app.get(
-  "/api/admin/participants/:attempt_id",
-  getParticipantDetail
-);
+app.get("/api/admin/participants/:attempt_id", getParticipantDetail);
 
 // ==========================================
 // ROUTE GRAFIK DISC
 // ==========================================
-app.get(
-  "/api/graphs/:attempt_id",
-  getGraphs
-);
+app.get("/api/graphs/:attempt_id", getGraphs);
 
 // ==========================================
 // 1. ENDPOINT UNTUK MENAMPILKAN SOAL KE test.html
