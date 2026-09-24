@@ -70,4 +70,4 @@ def generate_graph():
 
 if __name__ == "__main__":
     # debug=True only for local dev - turn off in production
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

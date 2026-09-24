@@ -32,7 +32,7 @@
         <!-- Header Title -->
         <div class="text-center mb-6">
           <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
-            Tes Selesai 🎉
+            Tes Selesai
           </span>
           <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-3">
             Hasil Analisis DISC
@@ -50,14 +50,6 @@
 
         <!-- Result Container (Hidden by default until loaded) -->
         <div id="resultContainer" class="space-y-6 hidden">
-          <!-- Dominant Profile Card -->
-          <div class="bg-purple-50 border border-purple-100 rounded-2xl p-5 text-center">
-            <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Tipe Kepribadian Utama</span>
-            <h2 id="dominantProfile" class="text-3xl font-black text-purple-900 mt-1">-</h2>
-            <p id="profileDescription" class="text-xs text-slate-600 mt-2 leading-relaxed px-2">
-              Deskripsi kepribadian akan muncul di sini.
-            </p>
-          </div>
 
           <!-- Tabel Skor Lengkap: Most / Least / Change -->
           <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4">
@@ -170,9 +162,6 @@
             fillRow('most', data.most);
             fillRow('least', data.least);
             fillRow('change', data.change);
-
-            document.getElementById('dominantProfile').textContent = data.dominant_type || 'D';
-            document.getElementById('profileDescription').textContent = data.description || 'Analisis kepribadian selesai.';
 
             if (data.is_custom) {
               document.getElementById('customNoteContainer').classList.remove('hidden');

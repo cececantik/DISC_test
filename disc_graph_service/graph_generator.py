@@ -1,26 +1,3 @@
-"""
-graph_generator.py
--------------------
-Core logic for generating DISC profile graphs (Mask / Pressure / Self)
-using matplotlib, replicating the official paper form's NON-LINEAR
-per-column conversion scale (read from disc_scale_table.xlsx).
-
-Each column (D, I, S, C) has its own printed list of numbers from top
-(highest plot position) to bottom (lowest plot position) - the physical
-paper is a normalized/percentile scale, not a plain linear axis.
-
-To plot a raw score:
-  1. Look for it in that column's printed list -> exact position.
-  2. If not printed exactly, linearly interpolate between the two
-     nearest printed values in that column's list (this is what the
-     original paper effectively does visually when a number falls
-     between two printed gridlines).
-
-Usage:
-    from graph_generator import generate_all_graphs
-    images = generate_all_graphs(scoring_data)
-    # images = {"mask": "<base64>", "pressure": "<base64>", "self": "<base64>"}
-"""
 
 import base64
 import bisect
@@ -155,8 +132,6 @@ GRAPH_STYLES = {
     },
 }
 
-
-
 def _validate_scoring_data(data: Dict) -> None:
     """Raise ValueError with a clear message if required keys are missing
     or not numeric. Fails fast instead of letting matplotlib throw a
@@ -259,22 +234,9 @@ def generate_all_graphs(scoring_data: Dict, scale_table: Dict = None) -> Dict[st
         raw_values = [scoring_data[k] for k in style["keys"]]
         scale_columns = scale_table[style["sheet"]]
         images[graph_name] = _render_single_graph(raw_values, style, scale_columns)
-
     return images
 
-
 def interpret_profile(change_scores: Dict) -> Dict:
-    """
-    Simple data-driven interpretation based on the "Self" (change_*) values.
-    change_scores: {"change_d":.., "change_i":.., "change_s":.., "change_c":..}
-    """
-    descriptions = {
-        "D": "Cenderung tegas, kompetitif, dan berorientasi hasil.",
-        "I": "Cenderung ramah, persuasif, dan antusias dalam bersosialisasi.",
-        "S": "Cenderung sabar, konsisten, dan suka membangun hubungan yang stabil.",
-        "C": "Cenderung teliti, analitis, dan mengutamakan akurasi.",
-    }
-
     mapping = {
         "D": change_scores.get("change_d", 0),
         "I": change_scores.get("change_i", 0),
@@ -291,7 +253,5 @@ def interpret_profile(change_scores: Dict) -> Dict:
         "dominant_score": mapping[dominant],
         "secondary_trait": secondary,
         "secondary_score": mapping[secondary],
-        "summary": f"{descriptions[dominant]} Kombinasi dengan sisi {secondary} "
-                   f"juga cukup menonjol: {descriptions[secondary].lower()}",
         "raw_scores": mapping,
     }
