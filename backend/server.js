@@ -118,18 +118,130 @@ app.post("/api/submit-test", async (req, res) => {
     res.json({ success: true, message: "Tes berhasil disimpan dan dihitung!" });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Terjadi kesalahan pada server saat menghitung skor.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Terjadi kesalahan pada server saat menghitung skor.",
+    });
   }
 });
 
 // Menyalakan server
 app.listen(3000, () => {
   console.log("Server berjalan di port 3000");
+});
+
+// ==========================================
+// ENDPOINT ADMIN: MENAMPILKAN DATA PESERTA
+// GET /api/admin/participants
+// ==========================================
+app.get("/api/admin/participants", async (req, res) => {
+  try {
+    // Ambil parameter pagination
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 10, 1), 100);
+
+    const search = (req.query.search || "").trim();
+
+    const offset = (page - 1) * limit;
+
+    // Kondisi pencarian
+    let whereClause = "";
+    let queryParams = [];
+
+    if (search) {
+      whereClause = "WHERE u.nama_lengkap LIKE ?";
+      queryParams.push(`%${search}%`);
+    }
+
+    // ==========================================
+    // 1. Hitung total peserta
+    // ==========================================
+    const [countRows] = await db.query(
+      `
+      SELECT COUNT(DISTINCT a.id) AS total
+      FROM attempts a
+      JOIN users u ON a.user_id = u.id
+      JOIN results r ON r.attempt_id = a.id
+      ${whereClause}
+      `,
+      queryParams,
+    );
+
+    const total = countRows[0].total;
+
+    // ==========================================
+    // 2. Ambil data peserta
+    // ==========================================
+    const [rows] = await db.query(
+      `
+      SELECT
+        u.nama_lengkap,
+        u.umur,
+        u.pekerjaan,
+        u.jenis_kelamin,
+        r.created_at AS tanggal_tes,
+        a.id AS attempt_id,
+
+        CASE
+          WHEN r.change_d >= r.change_i
+           AND r.change_d >= r.change_s
+           AND r.change_d >= r.change_c
+          THEN 'D'
+
+          WHEN r.change_i >= r.change_d
+           AND r.change_i >= r.change_s
+           AND r.change_i >= r.change_c
+          THEN 'I'
+
+          WHEN r.change_s >= r.change_d
+           AND r.change_s >= r.change_i
+           AND r.change_s >= r.change_c
+          THEN 'S'
+
+          ELSE 'C'
+        END AS dominant_type
+
+      FROM attempts a
+
+      JOIN users u
+        ON a.user_id = u.id
+
+      JOIN results r
+        ON r.attempt_id = a.id
+
+      ${whereClause}
+
+      ORDER BY r.created_at DESC
+
+      LIMIT ? OFFSET ?
+      `,
+      [...queryParams, limit, offset],
+    );
+
+    // ==========================================
+    // 3. Pagination
+    // ==========================================
+    const totalPages = Math.ceil(total / limit);
+
+    res.json({
+      success: true,
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total,
+        total_pages: totalPages,
+      },
+    });
+  } catch (error) {
+    console.error("Error mengambil data peserta admin:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Gagal memuat data peserta.",
+      error: error.message,
+    });
+  }
 });
 
 // ==========================================
@@ -156,12 +268,10 @@ app.post("/api/register", async (req, res) => {
     });
   } catch (error) {
     console.error("Error saat menyimpan data diri:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Gagal menyimpan data diri ke database.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Gagal menyimpan data diri ke database.",
+    });
   }
 });
 
