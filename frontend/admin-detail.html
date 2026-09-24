@@ -338,49 +338,249 @@
       // ==========================================
       // Tombol Download PDF (pakai html2canvas + jsPDF)
       // ==========================================
-      document.getElementById("btnDownload").addEventListener("click", async () => {
-        const btn = document.getElementById("btnDownload");
-        const label = document.getElementById("btnDownloadLabel");
-        const originalLabel = label.textContent;
+      // ==========================================
+// Tombol Download PDF
+// ==========================================
+// ==========================================
+// Tombol Download PDF
+// ==========================================
+document.getElementById("btnDownload").addEventListener("click", async () => {
+  const btn = document.getElementById("btnDownload");
+  const label = document.getElementById("btnDownloadLabel");
+  const originalLabel = label.textContent;
 
-        btn.disabled = true;
-        label.textContent = "Menyiapkan PDF...";
+  btn.disabled = true;
+  label.textContent = "Menyiapkan PDF...";
 
-        try {
-          const printArea = document.getElementById("printArea");
-          const canvas = await html2canvas(printArea, {
-            scale: 2,
-            backgroundColor: "#ffffff",
-            useCORS: true,
-          });
+  let pdfWrapper = null;
 
-          const imgData = canvas.toDataURL("image/png");
-          const { jsPDF } = window.jspdf;
+  try {
+    const original = document.getElementById("printArea");
 
-          // Ukuran PDF menyesuaikan rasio hasil capture (halaman tunggal)
-          const pdf = new jsPDF({
-            orientation: canvas.width > canvas.height ? "landscape" : "portrait",
-            unit: "px",
-            format: [canvas.width, canvas.height],
-          });
+    if (!original) {
+      throw new Error("Elemen printArea tidak ditemukan.");
+    }
 
-          pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    // ==========================================
+    // 1. Pastikan font selesai dimuat
+    // ==========================================
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
 
-          const namaEl = document.getElementById("bioNama");
-          const namaFile = (namaEl.textContent || "peserta")
-            .trim()
-            .replace(/\s+/g, "_")
-            .toLowerCase();
+    // ==========================================
+    // 2. Pastikan semua grafik sudah selesai
+    // ==========================================
+    const images = Array.from(original.querySelectorAll("img"));
 
-          pdf.save(`hasil-disc-${namaFile}.pdf`);
-        } catch (err) {
-          console.error("Gagal membuat PDF:", err);
-          alert("Gagal membuat file PDF. Coba gunakan tombol Cetak sebagai alternatif.");
-        } finally {
-          btn.disabled = false;
-          label.textContent = originalLabel;
+    await Promise.all(
+      images.map((img) => {
+        if (img.complete) {
+          return img.decode
+            ? img.decode().catch(() => {})
+            : Promise.resolve();
         }
+
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      })
+    );
+
+    // ==========================================
+    // 3. Buat salinan khusus untuk PDF
+    // ==========================================
+    const clone = original.cloneNode(true);
+
+    // Hilangkan class Tailwind dari clone.
+    // Kita akan memasukkan hasil style browser
+    // secara langsung ke setiap elemen.
+    const originalElements = [
+      original,
+      ...original.querySelectorAll("*")
+    ];
+
+    const cloneElements = [
+      clone,
+      ...clone.querySelectorAll("*")
+    ];
+
+    originalElements.forEach((source, index) => {
+      const target = cloneElements[index];
+
+      if (!target) return;
+
+      const computed = window.getComputedStyle(source);
+
+      // Ambil semua style hasil akhir browser.
+      // Nilai computed biasanya sudah menjadi
+      // RGB/RGBA sehingga tidak lagi memakai OKLCH.
+      let cssText = "";
+
+      for (let i = 0; i < computed.length; i++) {
+        const property = computed[i];
+        const value = computed.getPropertyValue(property);
+
+        if (value && !value.includes("oklch")) {
+          cssText += `${property}:${value};`;
+        }
+      }
+
+      target.setAttribute("style", cssText);
+
+      // Hilangkan class Tailwind agar clone tidak
+      // kembali membaca style Tailwind.
+      target.removeAttribute("class");
+    });
+
+    // ==========================================
+    // 4. Atur ukuran dan background PDF
+    // ==========================================
+    clone.style.backgroundColor = "#ffffff";
+    clone.style.color = "#111827";
+    clone.style.width = `${original.offsetWidth}px`;
+    clone.style.maxWidth = "none";
+    clone.style.borderRadius = "0";
+    clone.style.boxShadow = "none";
+
+    // ==========================================
+    // 5. Buat wrapper sementara
+    // ==========================================
+    pdfWrapper = document.createElement("div");
+
+    pdfWrapper.style.position = "fixed";
+    pdfWrapper.style.left = "-100000px";
+    pdfWrapper.style.top = "0";
+    pdfWrapper.style.width = `${original.offsetWidth}px`;
+    pdfWrapper.style.backgroundColor = "#ffffff";
+    pdfWrapper.style.zIndex = "-999999";
+
+    pdfWrapper.appendChild(clone);
+    document.body.appendChild(pdfWrapper);
+
+    // Beri waktu browser merender clone
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
       });
+    });
+
+    // ==========================================
+    // 6. Render clone dengan html2canvas
+    // ==========================================
+    const canvas = await html2canvas(clone, {
+      scale: 1.5,
+      backgroundColor: "#ffffff",
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+      imageTimeout: 15000,
+      scrollX: 0,
+      scrollY: 0
+    });
+
+    // Hapus clone setelah selesai
+    pdfWrapper.remove();
+    pdfWrapper = null;
+
+    // ==========================================
+    // 7. Buat PDF A4
+    // ==========================================
+    const { jsPDF } = window.jspdf;
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+      compress: true
+    });
+
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    const margin = 10;
+
+    const contentWidth = pageWidth - margin * 2;
+    const contentHeight = pageHeight - margin * 2;
+
+    // Rasio pixel canvas
+    const ratio = canvas.width / canvas.height;
+
+    // Lebar gambar di PDF
+    const imageWidth = contentWidth;
+
+    // Tinggi gambar berdasarkan rasio
+    const imageHeight = imageWidth / ratio;
+
+    // ==========================================
+    // 8. Masukkan gambar ke beberapa halaman
+    // ==========================================
+    let heightLeft = imageHeight;
+    let position = margin;
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.92);
+
+    // Halaman pertama
+    pdf.addImage(
+      imgData,
+      "JPEG",
+      margin,
+      position,
+      imageWidth,
+      imageHeight
+    );
+
+    heightLeft -= contentHeight;
+
+    // Halaman berikutnya
+    while (heightLeft > 0) {
+      position = margin - (imageHeight - heightLeft);
+
+      pdf.addPage();
+
+      pdf.addImage(
+        imgData,
+        "JPEG",
+        margin,
+        position,
+        imageWidth,
+        imageHeight
+      );
+
+      heightLeft -= contentHeight;
+    }
+
+    // ==========================================
+    // 9. Nama file PDF
+    // ==========================================
+    const namaEl = document.getElementById("bioNama");
+
+    const namaFile = (namaEl?.textContent || "peserta")
+      .trim()
+      .replace(/[\\/:*?"<>|]/g, "")
+      .replace(/\s+/g, "_")
+      .toLowerCase();
+
+    pdf.save(`hasil-disc-${namaFile}.pdf`);
+
+  } catch (err) {
+    console.error("Gagal membuat PDF:", err);
+
+    // Pastikan wrapper sementara dibersihkan
+    if (pdfWrapper) {
+      pdfWrapper.remove();
+    }
+
+    alert(
+      "Gagal membuat file PDF. Silakan buka Console browser (F12) untuk melihat detail error."
+    );
+
+  } finally {
+    btn.disabled = false;
+    label.textContent = originalLabel;
+  }
+});
     </script>
   </body>
 </html>
