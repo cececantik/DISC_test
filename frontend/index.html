@@ -743,8 +743,8 @@
         // Jika slide terakhir
         // masuk ke halaman data diri
 
-        window.location.href =
-          "frontend/data-diri.html";
+        sessionStorage.setItem("lastSlide", currentSlide);
+        window.location.href = "data-diri.html";
 
       }
     );
