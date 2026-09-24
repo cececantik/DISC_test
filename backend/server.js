@@ -108,28 +108,45 @@ app.post("/api/submit-test", async (req, res) => {
 
     // Simpan ringkasan skor ke tabel `scores`
     await db.query(
-      `INSERT INTO scores 
-            (attempt_id, most_d, most_i, most_s, most_c, most_star, least_d, least_i, least_s, least_c, least_star, change_d, change_i, change_s, change_c, change_star) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        attempt_id,
-        scoreMost.D,
-        scoreMost.I,
-        scoreMost.S,
-        scoreMost.C,
-        scoreMost.star,
-        scoreLeast.D,
-        scoreLeast.I,
-        scoreLeast.S,
-        scoreLeast.C,
-        scoreLeast.star,
-        scoreChange.D,
-        scoreChange.I,
-        scoreChange.S,
-        scoreChange.C,
-        scoreChange.star,
-      ],
-    );
+  `INSERT INTO results 
+    (
+      attempt_id,
+      most_d,
+      most_i,
+      most_s,
+      most_c,
+      most_star,
+      least_d,
+      least_i,
+      least_s,
+      least_c,
+      least_star,
+      change_d,
+      change_i,
+      change_s,
+      change_c,
+      change_star
+    )
+   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  [
+    attempt_id,
+    scoreMost.D,
+    scoreMost.I,
+    scoreMost.S,
+    scoreMost.C,
+    scoreMost.star,
+    scoreLeast.D,
+    scoreLeast.I,
+    scoreLeast.S,
+    scoreLeast.C,
+    scoreLeast.star,
+    scoreChange.D,
+    scoreChange.I,
+    scoreChange.S,
+    scoreChange.C,
+    scoreChange.star,
+  ],
+);
 
     res.json({ success: true, message: "Tes berhasil disimpan dan dihitung!" });
   } catch (error) {
@@ -264,29 +281,54 @@ app.get("/api/admin/participants", async (req, res) => {
 // 3. ENDPOINT UNTUK MENYIMPAN DATA DIRI & MEMBUAT ATTEMPT_ID
 // ==========================================
 app.post("/api/register", async (req, res) => {
-  const { nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin } =
-    req.body;
+  const {
+    nama_lengkap,
+    umur,
+    pendidikan_terakhir,
+    pekerjaan,
+    jenis_kelamin,
+  } = req.body;
 
   try {
-    // Masukkan data diri ke tabel `users`
-    const [result] = await db.query(
-      `INSERT INTO users (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin) VALUES (?, ?, ?, ?, ?)`,
-      [nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin],
+    const [userResult] = await db.query(
+      `INSERT INTO users
+       (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        nama_lengkap,
+        umur,
+        pendidikan_terakhir,
+        pekerjaan,
+        jenis_kelamin,
+      ],
     );
 
-    // Ambil ID auto-increment yang baru saja digenerate sebagai attempt_id
-    const attemptId = result.insertId;
+    const userId = userResult.insertId;
+
+    console.log("USER BERHASIL DIBUAT:", userId);
+
+    const [attemptResult] = await db.query(
+      `INSERT INTO attempts (user_id, status)
+       VALUES (?, 'in_progress')`,
+      [userId],
+    );
+
+    const attemptId = attemptResult.insertId;
+
+    console.log("ATTEMPT BERHASIL DIBUAT:", attemptId);
 
     res.json({
       success: true,
       message: "Data diri berhasil disimpan!",
       attempt_id: attemptId,
     });
+
   } catch (error) {
-    console.error("Error saat menyimpan data diri:", error);
+    console.error("ERROR REGISTER:", error);
+
     res.status(500).json({
       success: false,
-      message: "Gagal menyimpan data diri ke database.",
+      message: error.message,
     });
   }
 });
