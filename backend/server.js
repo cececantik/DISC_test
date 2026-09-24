@@ -3,7 +3,6 @@ const cors = require("cors");
 const db = require("./db");
 
 const { getParticipants, getParticipantDetail } = require("./admin_controller");
-
 const { getGraphs } = require("./graph_controller");
 
 const app = express();
@@ -15,7 +14,6 @@ app.use(express.json());
 // ROUTE ADMIN
 // ==========================================
 app.get("/api/admin/participants", getParticipants);
-
 app.get("/api/admin/participants/:attempt_id", getParticipantDetail);
 
 // ==========================================
@@ -32,9 +30,9 @@ app.get("/api/questions", async (req, res) => {
       "SELECT * FROM questions ORDER BY id ASC",
     );
 
-    let fullData = [];
+    const fullData = [];
 
-    for (let q of questions) {
+    for (const q of questions) {
       const [options] = await db.query(
         "SELECT id, teks, tipe_most, tipe_least FROM options WHERE question_id = ?",
         [q.id],
@@ -43,36 +41,75 @@ app.get("/api/questions", async (req, res) => {
       fullData.push({
         id: q.id,
         nomor: q.nomor || q.id,
-        options: options,
+        options,
       });
     }
 
     res.json({ success: true, data: fullData });
   } catch (error) {
     console.error("Error saat mengambil soal:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Gagal memuat soal dari database." });
+    res.status(500).json({
+      success: false,
+      message: "Gagal memuat soal dari database.",
+    });
   }
 });
 
 // ==========================================
 // 2. ENDPOINT UNTUK MENYIMPAN JAWABAN & HITUNG SKOR
-// (Kode yang Anda miliki ditaruh di sini)
 // ==========================================
 app.post("/api/submit-test", async (req, res) => {
   const { attempt_id, answers } = req.body;
 
-  try {
-    let scoreMost = { D: 0, I: 0, S: 0, C: 0, star: 0 };
-    let scoreLeast = { D: 0, I: 0, S: 0, C: 0, star: 0 };
+  if (!attempt_id || !Array.isArray(answers) || answers.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Data attempt_id atau jawaban tidak lengkap.",
+    });
+  }
 
-    for (let ans of answers) {
-      // 1. Ambil tipe_most berdasarkan ID opsi Most yang dikirim test.html
+  try {
+    const [attemptCheck] = await db.query(
+      "SELECT id FROM attempts WHERE id = ?",
+      [attempt_id],
+    );
+
+    if (attemptCheck.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Attempt_id tidak ditemukan. Silakan mulai tes dari awal.",
+      });
+    }
+
+    const scoreMost = { D: 0, I: 0, S: 0, C: 0, star: 0 };
+    const scoreLeast = { D: 0, I: 0, S: 0, C: 0, star: 0 };
+    const answerRows = [];
+
+    for (const ans of answers) {
+      if (
+        !ans ||
+        !ans.question_id ||
+        !ans.most_option_id ||
+        !ans.least_option_id
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Ada jawaban yang tidak lengkap.",
+        });
+      }
+
+      answerRows.push([
+        attempt_id,
+        ans.question_id,
+        ans.most_option_id,
+        ans.least_option_id,
+      ]);
+
       const [mostRows] = await db.query(
         "SELECT tipe_most FROM options WHERE id = ?",
         [ans.most_option_id],
       );
+
       if (mostRows.length > 0) {
         const tm = mostRows[0].tipe_most;
         if (tm === "D") scoreMost.D++;
@@ -82,11 +119,11 @@ app.post("/api/submit-test", async (req, res) => {
         else if (tm === "*") scoreMost.star++;
       }
 
-      // 2. Ambil tipe_least berdasarkan ID opsi Least yang dikirim test.html
       const [leastRows] = await db.query(
         "SELECT tipe_least FROM options WHERE id = ?",
         [ans.least_option_id],
       );
+
       if (leastRows.length > 0) {
         const tl = leastRows[0].tipe_least;
         if (tl === "D") scoreLeast.D++;
@@ -97,8 +134,7 @@ app.post("/api/submit-test", async (req, res) => {
       }
     }
 
-    // Hitung Skor Change (Grafik 3)
-    let scoreChange = {
+    const scoreChange = {
       D: scoreMost.D - scoreLeast.D,
       I: scoreMost.I - scoreLeast.I,
       S: scoreMost.S - scoreLeast.S,
@@ -106,172 +142,120 @@ app.post("/api/submit-test", async (req, res) => {
       star: scoreMost.star + scoreLeast.star,
     };
 
-    // Simpan ringkasan skor ke tabel `scores`
     await db.query(
-  `INSERT INTO results 
-    (
-      attempt_id,
-      most_d,
-      most_i,
-      most_s,
-      most_c,
-      most_star,
-      least_d,
-      least_i,
-      least_s,
-      least_c,
-      least_star,
-      change_d,
-      change_i,
-      change_s,
-      change_c,
-      change_star
-    )
-   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  [
-    attempt_id,
-    scoreMost.D,
-    scoreMost.I,
-    scoreMost.S,
-    scoreMost.C,
-    scoreMost.star,
-    scoreLeast.D,
-    scoreLeast.I,
-    scoreLeast.S,
-    scoreLeast.C,
-    scoreLeast.star,
-    scoreChange.D,
-    scoreChange.I,
-    scoreChange.S,
-    scoreChange.C,
-    scoreChange.star,
-  ],
-);
+      `INSERT INTO answers (attempt_id, question_id, most_option_id, least_option_id)
+       VALUES ?`,
+      [answerRows],
+    );
 
-    res.json({ success: true, message: "Tes berhasil disimpan dan dihitung!" });
+    await db.query(
+      `INSERT INTO results
+       (attempt_id, most_d, most_i, most_s, most_c, most_star,
+        least_d, least_i, least_s, least_c, least_star,
+        change_d, change_i, change_s, change_c, change_star)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        attempt_id,
+        scoreMost.D,
+        scoreMost.I,
+        scoreMost.S,
+        scoreMost.C,
+        scoreMost.star,
+        scoreLeast.D,
+        scoreLeast.I,
+        scoreLeast.S,
+        scoreLeast.C,
+        scoreLeast.star,
+        scoreChange.D,
+        scoreChange.I,
+        scoreChange.S,
+        scoreChange.C,
+        scoreChange.star,
+      ],
+    );
+
+    await db.query(
+      "UPDATE attempts SET status = 'completed', completed_at = NOW() WHERE id = ?",
+      [attempt_id],
+    );
+
+    const [resultRows] = await db.query(
+      "SELECT * FROM results WHERE attempt_id = ? ORDER BY id DESC LIMIT 1",
+      [attempt_id],
+    );
+
+    res.json({
+      success: true,
+      message: "Tes berhasil disimpan dan dihitung!",
+      attempt_id,
+      result: resultRows[0],
+    });
   } catch (error) {
-    console.error(error);
+    console.error("Submit test error:", error);
     res.status(500).json({
       success: false,
       message: "Terjadi kesalahan pada server saat menghitung skor.",
+      error: error.message,
     });
   }
 });
 
-// Menyalakan server
-app.listen(3000, () => {
-  console.log("Server berjalan di port 3000");
-});
+app.get("/api/review/:attempt_id", async (req, res) => {
+  const { attempt_id } = req.params;
 
-// ==========================================
-// ENDPOINT ADMIN: MENAMPILKAN DATA PESERTA
-// GET /api/admin/participants
-// ==========================================
-app.get("/api/admin/participants", async (req, res) => {
   try {
-    // Ambil parameter pagination
-    const page = Math.max(parseInt(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(parseInt(req.query.limit) || 10, 1), 100);
+    const [rows] = await db.query(
+      `SELECT r.*, u.nama_lengkap
+       FROM results r
+       JOIN attempts a ON a.id = r.attempt_id
+       JOIN users u ON u.id = a.user_id
+       WHERE r.attempt_id = ?`,
+      [attempt_id],
+    );
 
-    const search = (req.query.search || "").trim();
-
-    const offset = (page - 1) * limit;
-
-    // Kondisi pencarian
-    let whereClause = "";
-    let queryParams = [];
-
-    if (search) {
-      whereClause = "WHERE u.nama_lengkap LIKE ?";
-      queryParams.push(`%${search}%`);
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Hasil tes tidak ditemukan.",
+      });
     }
 
-    // ==========================================
-    // 1. Hitung total peserta
-    // ==========================================
-    const [countRows] = await db.query(
-      `
-      SELECT COUNT(DISTINCT a.id) AS total
-      FROM attempts a
-      JOIN users u ON a.user_id = u.id
-      JOIN results r ON r.attempt_id = a.id
-      ${whereClause}
-      `,
-      queryParams,
-    );
-
-    const total = countRows[0].total;
-
-    // ==========================================
-    // 2. Ambil data peserta
-    // ==========================================
-    const [rows] = await db.query(
-      `
-      SELECT
-        u.nama_lengkap,
-        u.umur,
-        u.pekerjaan,
-        u.jenis_kelamin,
-        r.created_at AS tanggal_tes,
-        a.id AS attempt_id,
-
-        CASE
-          WHEN r.change_d >= r.change_i
-           AND r.change_d >= r.change_s
-           AND r.change_d >= r.change_c
-          THEN 'D'
-
-          WHEN r.change_i >= r.change_d
-           AND r.change_i >= r.change_s
-           AND r.change_i >= r.change_c
-          THEN 'I'
-
-          WHEN r.change_s >= r.change_d
-           AND r.change_s >= r.change_i
-           AND r.change_s >= r.change_c
-          THEN 'S'
-
-          ELSE 'C'
-        END AS dominant_type
-
-      FROM attempts a
-
-      JOIN users u
-        ON a.user_id = u.id
-
-      JOIN results r
-        ON r.attempt_id = a.id
-
-      ${whereClause}
-
-      ORDER BY r.created_at DESC
-
-      LIMIT ? OFFSET ?
-      `,
-      [...queryParams, limit, offset],
-    );
-
-    // ==========================================
-    // 3. Pagination
-    // ==========================================
-    const totalPages = Math.ceil(total / limit);
+    const result = rows[0];
 
     res.json({
       success: true,
-      data: rows,
-      pagination: {
-        page,
-        limit,
-        total,
-        total_pages: totalPages,
+      data: {
+        attempt_id: result.attempt_id,
+        nama_lengkap: result.nama_lengkap,
+        most: {
+          D: result.most_d,
+          I: result.most_i,
+          S: result.most_s,
+          C: result.most_c,
+          star: result.most_star,
+        },
+        least: {
+          D: result.least_d,
+          I: result.least_i,
+          S: result.least_s,
+          C: result.least_c,
+          star: result.least_star,
+        },
+        change: {
+          D: result.change_d,
+          I: result.change_i,
+          S: result.change_s,
+          C: result.change_c,
+          star: result.change_star,
+        },
+        is_custom: false,
       },
     });
   } catch (error) {
-    console.error("Error mengambil data peserta admin:", error);
-
+    console.error("Review error:", error);
     res.status(500).json({
       success: false,
-      message: "Gagal memuat data peserta.",
+      message: "Gagal memuat hasil tes.",
       error: error.message,
     });
   }
@@ -289,38 +273,33 @@ app.post("/api/register", async (req, res) => {
     jenis_kelamin,
   } = req.body;
 
+  if (!nama_lengkap) {
+    return res.status(400).json({
+      success: false,
+      message: "Nama lengkap wajib diisi.",
+    });
+  }
+
   try {
     const [userResult] = await db.query(
-      `INSERT INTO users
-       (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin)
+      `INSERT INTO users (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin)
        VALUES (?, ?, ?, ?, ?)`,
-      [
-        nama_lengkap,
-        umur,
-        pendidikan_terakhir,
-        pekerjaan,
-        jenis_kelamin,
-      ],
+      [nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin],
     );
 
     const userId = userResult.insertId;
 
-    console.log("USER BERHASIL DIBUAT:", userId);
-
     const [attemptResult] = await db.query(
-      `INSERT INTO attempts (user_id, status)
-       VALUES (?, 'in_progress')`,
+      `INSERT INTO attempts (user_id, status, started_at)
+       VALUES (?, 'in_progress', NOW())`,
       [userId],
     );
-
-    const attemptId = attemptResult.insertId;
-
-    console.log("ATTEMPT BERHASIL DIBUAT:", attemptId);
 
     res.json({
       success: true,
       message: "Data diri berhasil disimpan!",
-      attempt_id: attemptId,
+      attempt_id: attemptResult.insertId,
+      user_id: userId,
     });
 
   } catch (error) {
@@ -328,7 +307,8 @@ app.post("/api/register", async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Gagal menyimpan data diri ke database.",
+      error: error.message,
     });
   }
 });
@@ -336,7 +316,6 @@ app.post("/api/register", async (req, res) => {
 // ==========================================
 // HALAMAN UTAMA & TEST KONEKSI
 // ==========================================
-
 app.get("/", (req, res) => {
   res.send("Server DISC berhasil berjalan!");
 });
@@ -360,218 +339,6 @@ app.get("/test-db", (req, res) => {
   });
 });
 
-// ==========================================
-// 1. MENGAMBIL SEMUA 24 SOAL + 4 PILIHAN (Sekaligus)
-// ==========================================
-app.get("/questions", (req, res) => {
-  const sql = `
-    SELECT 
-      q.id AS question_id,
-      q.nomor,
-      o.id AS option_id,
-      o.option_order,
-      o.teks
-    FROM questions q
-    JOIN options o ON q.id = o.question_id
-    ORDER BY q.nomor, o.option_order
-  `;
-
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error("Error mengambil questions:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Gagal mengambil daftar pertanyaan",
-        error: err.message,
-      });
-    }
-
-    // Kelompokkan opsi ke dalam masing-masing nomor soal
-    const formattedData = [];
-    results.forEach((row) => {
-      let q = formattedData.find(
-        (item) => item.question_id === row.question_id,
-      );
-      if (!q) {
-        q = {
-          question_id: row.question_id,
-          nomor: row.nomor,
-          options: [],
-        };
-        formattedData.push(q);
-      }
-      q.options.push({
-        option_id: row.option_id,
-        order: row.option_order,
-        teks: row.teks,
-      });
-    });
-
-    res.json({
-      success: true,
-      data: formattedData,
-    });
-  });
-});
-
-// ==========================================
-// 2. MENGAMBIL 1 SOAL TERTENTU (Step-by-Step)
-// ==========================================
-app.get("/questions/:nomor", (req, res) => {
-  const nomor = req.params.nomor;
-
-  const sql = `
-    SELECT
-      q.id AS question_id,
-      q.nomor,
-      q.pertanyaan,
-      o.id AS option_id,
-      o.option_order,
-      o.teks
-    FROM questions q
-    JOIN options o ON q.id = o.question_id
-    WHERE q.nomor = ?
-    ORDER BY o.option_order
-  `;
-
-  db.query(sql, [nomor], (err, results) => {
-    if (err) {
-      console.error("Error mengambil soal:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Gagal mengambil soal",
-        error: err.message,
-      });
-    }
-
-    if (results.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Soal tidak ditemukan",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: results,
-    });
-  });
-});
-
-// ==========================================
-// 3. SUBMIT TES: SIMPAN JAWABAN & HITUNG SKOR
-// ==========================================
-app.post("/submit-test", (req, res) => {
-  const { user, answers } = req.body;
-
-  // Validasi input
-  if (!user || !answers || answers.length !== 24) {
-    return res.status(400).json({
-      success: false,
-      message: "Data peserta atau 24 nomor jawaban belum lengkap",
-    });
-  }
-
-  // A. Simpan User
-  const sqlUser = `
-    INSERT INTO users (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin)
-    VALUES (?, ?, ?, ?, ?)
-  `;
-  const userParams = [
-    user.nama_lengkap,
-    user.umur,
-    user.pendidikan_terakhir,
-    user.pekerjaan,
-    user.jenis_kelamin,
-  ];
-
-  db.query(sqlUser, userParams, (errUser, resUser) => {
-    if (errUser) {
-      console.error("Gagal simpan user:", errUser);
-      return res
-        .status(500)
-        .json({ success: false, message: "Gagal menyimpan data user" });
-    }
-
-    const userId = resUser.insertId;
-
-    // B. Buat Attempt
-    const sqlAttempt = `INSERT INTO attempts (user_id, status) VALUES (?, 'in_progress')`;
-    db.query(sqlAttempt, [userId], (errAttempt, resAttempt) => {
-      if (errAttempt) {
-        console.error("Gagal simpan attempt:", errAttempt);
-        return res
-          .status(500)
-          .json({ success: false, message: "Gagal membuat sesi tes" });
-      }
-
-      const attemptId = resAttempt.insertId;
-
-      // C. Siapkan Array 24 Jawaban
-      const answerRows = answers.map((ans) => [
-        attemptId,
-        ans.question_id,
-        ans.most_option_id,
-        ans.least_option_id,
-      ]);
-
-      const sqlAnswers = `
-        INSERT INTO answers (attempt_id, question_id, most_option_id, least_option_id)
-        VALUES ?
-      `;
-
-      db.query(sqlAnswers, [answerRows], (errAns) => {
-        if (errAns) {
-          console.error("Gagal simpan jawaban:", errAns);
-          return res
-            .status(500)
-            .json({ success: false, message: "Gagal menyimpan jawaban" });
-        }
-
-        // D. Panggil Stored Procedure Hitung Skor DISC
-        db.query("CALL CalculateDiscScores(?)", [attemptId], (errCalc) => {
-          if (errCalc) {
-            console.error("Gagal hitung skor:", errCalc);
-            return res
-              .status(500)
-              .json({ success: false, message: "Gagal menghitung skor tes" });
-          }
-
-          // E. Ambil Hasil Akhir
-          const sqlResult = `
-            SELECT 
-              r.*,
-              u.nama_lengkap
-            FROM results r
-            JOIN attempts a ON r.attempt_id = a.id
-            JOIN users u ON a.user_id = u.id
-            WHERE r.attempt_id = ?
-          `;
-
-          db.query(sqlResult, [attemptId], (errRes, rowsRes) => {
-            if (errRes || rowsRes.length === 0) {
-              console.error("Gagal mengambil hasil:", errRes);
-              return res
-                .status(500)
-                .json({ success: false, message: "Gagal memuat hasil tes" });
-            }
-
-            res.json({
-              success: true,
-              message: "Tes berhasil diselesaikan",
-              attempt_id: attemptId,
-              result: rowsRes[0],
-            });
-          });
-        });
-      });
-    });
-  });
-});
-
-// ==========================================
-// MENJALANKAN SERVER
-// ==========================================
 app.listen(3000, () => {
   console.log("----------------------------------");
   console.log("Server DISC berhasil dijalankan!");
