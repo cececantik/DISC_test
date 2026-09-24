@@ -16,8 +16,8 @@
       rel="stylesheet"
     />
 
-    <!-- html2canvas + jsPDF (dipakai untuk fitur Download PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- FIXED: Ganti html2canvas 1.4.1 → html2canvas-pro 2.4.5 (support oklch color) -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.4.5/dist/html2canvas-pro.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
@@ -91,7 +91,7 @@
           <span
             class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100"
           >
-            Tes Selesai
+            Tes Selesai 🎉
           </span>
           <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-3">
             Hasil Analisis DISC
@@ -336,13 +336,12 @@
       });
 
       // ==========================================
-      // Tombol Download PDF (pakai html2canvas + jsPDF)
-      // ==========================================
-      // ==========================================
 // Tombol Download PDF
-// ==========================================
-// ==========================================
-// Tombol Download PDF
+// Format:
+// Halaman 1 = Hasil Analisis
+// Halaman 2 = Grafik Mask
+// Halaman 3 = Grafik Pressure
+// Halaman 4 = Grafik Self
 // ==========================================
 document.getElementById("btnDownload").addEventListener("click", async () => {
   const btn = document.getElementById("btnDownload");
@@ -352,228 +351,286 @@ document.getElementById("btnDownload").addEventListener("click", async () => {
   btn.disabled = true;
   label.textContent = "Menyiapkan PDF...";
 
-  let pdfWrapper = null;
-
   try {
-    const original = document.getElementById("printArea");
+    const { jsPDF } = window.jspdf;
 
-    if (!original) {
-      throw new Error("Elemen printArea tidak ditemukan.");
+    // Buat PDF A4
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    });
+
+    const printArea = document.getElementById("printArea");
+
+    if (!printArea) {
+      throw new Error("Element #printArea tidak ditemukan.");
     }
 
-    // ==========================================
-    // 1. Pastikan font selesai dimuat
-    // ==========================================
+    // Tunggu font selesai dimuat
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready;
     }
 
     // ==========================================
-    // 2. Pastikan semua grafik sudah selesai
+    // HALAMAN 1
+    // Hasil Analisis
     // ==========================================
-    const images = Array.from(original.querySelectorAll("img"));
 
-    await Promise.all(
-      images.map((img) => {
-        if (img.complete) {
-          return img.decode
-            ? img.decode().catch(() => {})
-            : Promise.resolve();
-        }
+    label.textContent = "Membuat hasil analisis...";
 
-        return new Promise((resolve) => {
-          img.onload = resolve;
-          img.onerror = resolve;
-        });
-      })
-    );
-
-    // ==========================================
-    // 3. Buat salinan khusus untuk PDF
-    // ==========================================
-    const clone = original.cloneNode(true);
-
-    // Hilangkan class Tailwind dari clone.
-    // Kita akan memasukkan hasil style browser
-    // secara langsung ke setiap elemen.
-    const originalElements = [
-      original,
-      ...original.querySelectorAll("*")
-    ];
-
-    const cloneElements = [
-      clone,
-      ...clone.querySelectorAll("*")
-    ];
-
-    originalElements.forEach((source, index) => {
-      const target = cloneElements[index];
-
-      if (!target) return;
-
-      const computed = window.getComputedStyle(source);
-
-      // Ambil semua style hasil akhir browser.
-      // Nilai computed biasanya sudah menjadi
-      // RGB/RGBA sehingga tidak lagi memakai OKLCH.
-      let cssText = "";
-
-      for (let i = 0; i < computed.length; i++) {
-        const property = computed[i];
-        const value = computed.getPropertyValue(property);
-
-        if (value && !value.includes("oklch")) {
-          cssText += `${property}:${value};`;
-        }
-      }
-
-      target.setAttribute("style", cssText);
-
-      // Hilangkan class Tailwind agar clone tidak
-      // kembali membaca style Tailwind.
-      target.removeAttribute("class");
-    });
-
-    // ==========================================
-    // 4. Atur ukuran dan background PDF
-    // ==========================================
-    clone.style.backgroundColor = "#ffffff";
-    clone.style.color = "#111827";
-    clone.style.width = `${original.offsetWidth}px`;
-    clone.style.maxWidth = "none";
-    clone.style.borderRadius = "0";
-    clone.style.boxShadow = "none";
-
-    // ==========================================
-    // 5. Buat wrapper sementara
-    // ==========================================
-    pdfWrapper = document.createElement("div");
-
-    pdfWrapper.style.position = "fixed";
-    pdfWrapper.style.left = "-100000px";
-    pdfWrapper.style.top = "0";
-    pdfWrapper.style.width = `${original.offsetWidth}px`;
-    pdfWrapper.style.backgroundColor = "#ffffff";
-    pdfWrapper.style.zIndex = "-999999";
-
-    pdfWrapper.appendChild(clone);
-    document.body.appendChild(pdfWrapper);
-
-    // Beri waktu browser merender clone
-    await new Promise((resolve) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(resolve);
-      });
-    });
-
-    // ==========================================
-    // 6. Render clone dengan html2canvas
-    // ==========================================
-    const canvas = await html2canvas(clone, {
+    const analysisCanvas = await html2canvas(printArea, {
       scale: 1.5,
       backgroundColor: "#ffffff",
       useCORS: true,
-      allowTaint: false,
       logging: false,
-      imageTimeout: 15000,
-      scrollX: 0,
-      scrollY: 0
+
+      // Saat html2canvas melakukan clone,
+      // sembunyikan bagian grafik.
+      onclone: (clonedDocument) => {
+        const graphSection =
+          clonedDocument.getElementById("graphSection");
+
+        if (graphSection) {
+          graphSection.style.display = "none";
+        }
+
+        const graphLoading =
+          clonedDocument.getElementById("graphLoading");
+
+        if (graphLoading) {
+          graphLoading.style.display = "none";
+        }
+
+        const graphError =
+          clonedDocument.getElementById("graphError");
+
+        if (graphError) {
+          graphError.style.display = "none";
+        }
+      },
     });
 
-    // Hapus clone setelah selesai
-    pdfWrapper.remove();
-    pdfWrapper = null;
-
-    // ==========================================
-    // 7. Buat PDF A4
-    // ==========================================
-    const { jsPDF } = window.jspdf;
-
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-      compress: true
-    });
-
+    // Ukuran halaman A4
     const pageWidth = 210;
     const pageHeight = 297;
 
     const margin = 10;
 
-    const contentWidth = pageWidth - margin * 2;
-    const contentHeight = pageHeight - margin * 2;
+    const maxWidth = pageWidth - margin * 2;
+    const maxHeight = pageHeight - margin * 2;
 
-    // Rasio pixel canvas
-    const ratio = canvas.width / canvas.height;
+    let analysisWidth = maxWidth;
+    let analysisHeight =
+      (analysisCanvas.height * analysisWidth) /
+      analysisCanvas.width;
 
-    // Lebar gambar di PDF
-    const imageWidth = contentWidth;
+    // Kalau terlalu tinggi, kecilkan supaya
+    // hasil analisis tetap muat halaman 1
+    if (analysisHeight > maxHeight) {
+      analysisHeight = maxHeight;
+      analysisWidth =
+        (analysisCanvas.width * analysisHeight) /
+        analysisCanvas.height;
+    }
 
-    // Tinggi gambar berdasarkan rasio
-    const imageHeight = imageWidth / ratio;
+    const analysisX =
+      (pageWidth - analysisWidth) / 2;
 
-    // ==========================================
-    // 8. Masukkan gambar ke beberapa halaman
-    // ==========================================
-    let heightLeft = imageHeight;
-    let position = margin;
+    const analysisY = margin;
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.92);
-
-    // Halaman pertama
     pdf.addImage(
-      imgData,
-      "JPEG",
-      margin,
-      position,
-      imageWidth,
-      imageHeight
+      analysisCanvas.toDataURL("image/png"),
+      "PNG",
+      analysisX,
+      analysisY,
+      analysisWidth,
+      analysisHeight
     );
 
-    heightLeft -= contentHeight;
+    // ==========================================
+    // FUNGSI UNTUK MENAMBAHKAN GRAPH
+    // ==========================================
 
-    // Halaman berikutnya
-    while (heightLeft > 0) {
-      position = margin - (imageHeight - heightLeft);
+    function addGraphPage(imgElement, title) {
+      const pageWidth = 210;
+      const pageHeight = 297;
 
-      pdf.addPage();
+      const margin = 15;
 
-      pdf.addImage(
-        imgData,
-        "JPEG",
-        margin,
-        position,
-        imageWidth,
-        imageHeight
+      // Judul grafik
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(14);
+
+      pdf.text(
+        title,
+        pageWidth / 2,
+        15,
+        { align: "center" }
       );
 
-      heightLeft -= contentHeight;
+      // Ukuran asli gambar
+      const imageWidth =
+        imgElement.naturalWidth;
+
+      const imageHeight =
+        imgElement.naturalHeight;
+
+      if (!imageWidth || !imageHeight) {
+        throw new Error(
+          `Ukuran gambar ${title} tidak tersedia.`
+        );
+      }
+
+      // Maksimal area gambar
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = pageHeight - 35;
+
+      let width = maxWidth;
+      let height =
+        (imageHeight * width) /
+        imageWidth;
+
+      // Kalau terlalu tinggi,
+      // sesuaikan berdasarkan tinggi
+      if (height > maxHeight) {
+        height = maxHeight;
+        width =
+          (imageWidth * height) /
+          imageHeight;
+      }
+
+      const x =
+        (pageWidth - width) / 2;
+
+      const y = 25;
+
+      // Masukkan PNG Base64 langsung
+      pdf.addImage(
+        imgElement.src,
+        "PNG",
+        x,
+        y,
+        width,
+        height
+      );
     }
 
     // ==========================================
-    // 9. Nama file PDF
+    // HALAMAN 2
+    // Grafik Mask
     // ==========================================
-    const namaEl = document.getElementById("bioNama");
 
-    const namaFile = (namaEl?.textContent || "peserta")
-      .trim()
-      .replace(/[\\/:*?"<>|]/g, "")
-      .replace(/\s+/g, "_")
-      .toLowerCase();
+    label.textContent = "Menambahkan grafik Mask...";
 
-    pdf.save(`hasil-disc-${namaFile}.pdf`);
+    const graphMask =
+      document.getElementById("graphMask");
+
+    if (
+      !graphMask ||
+      !graphMask.src ||
+      graphMask.naturalWidth === 0
+    ) {
+      throw new Error(
+        "Grafik Mask belum tersedia."
+      );
+    }
+
+    pdf.addPage();
+
+    addGraphPage(
+      graphMask,
+      "Grafik Mask (Public Self)"
+    );
+
+    // ==========================================
+    // HALAMAN 3
+    // Grafik Pressure
+    // ==========================================
+
+    label.textContent =
+      "Menambahkan grafik Pressure...";
+
+    const graphPressure =
+      document.getElementById("graphPressure");
+
+    if (
+      !graphPressure ||
+      !graphPressure.src ||
+      graphPressure.naturalWidth === 0
+    ) {
+      throw new Error(
+        "Grafik Pressure belum tersedia."
+      );
+    }
+
+    pdf.addPage();
+
+    addGraphPage(
+      graphPressure,
+      "Grafik Pressure (Private Self)"
+    );
+
+    // ==========================================
+    // HALAMAN 4
+    // Grafik Self
+    // ==========================================
+
+    label.textContent =
+      "Menambahkan grafik Self...";
+
+    const graphSelf =
+      document.getElementById("graphSelf");
+
+    if (
+      !graphSelf ||
+      !graphSelf.src ||
+      graphSelf.naturalWidth === 0
+    ) {
+      throw new Error(
+        "Grafik Self belum tersedia."
+      );
+    }
+
+    pdf.addPage();
+
+    addGraphPage(
+      graphSelf,
+      "Grafik Self (Core / Natural)"
+    );
+
+    // ==========================================
+    // NAMA FILE
+    // ==========================================
+
+    const namaEl =
+      document.getElementById("bioNama");
+
+    const namaFile =
+      (namaEl.textContent || "peserta")
+        .trim()
+        .replace(/\s+/g, "_")
+        .replace(/[^a-zA-Z0-9_-]/g, "")
+        .toLowerCase();
+
+    // ==========================================
+    // DOWNLOAD
+    // ==========================================
+
+    pdf.save(
+      `hasil-disc-${namaFile}.pdf`
+    );
 
   } catch (err) {
-    console.error("Gagal membuat PDF:", err);
-
-    // Pastikan wrapper sementara dibersihkan
-    if (pdfWrapper) {
-      pdfWrapper.remove();
-    }
+    console.error(
+      "Gagal membuat PDF:",
+      err
+    );
 
     alert(
-      "Gagal membuat file PDF. Silakan buka Console browser (F12) untuk melihat detail error."
+      "Gagal membuat PDF.\n\n" +
+      "Detail error: " +
+      (err.message || err)
     );
 
   } finally {
