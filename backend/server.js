@@ -1,15 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const db = require("./db");
-const graphRoutes = require("./routes_graph");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(graphRoutes);
 
+// ==========================================
 // 1. ENDPOINT UNTUK MENAMPILKAN SOAL KE test.html
+// ==========================================
 app.get("/api/questions", async (req, res) => {
   try {
     const [questions] = await db.query(
@@ -91,9 +91,8 @@ app.post("/api/submit-test", async (req, res) => {
     };
 
     // Simpan ringkasan skor ke tabel `scores`
-    // Simpan ringkasan skor ke tabel `results`
     await db.query(
-      `INSERT INTO results 
+      `INSERT INTO scores 
             (attempt_id, most_d, most_i, most_s, most_c, most_star, least_d, least_i, least_s, least_c, least_star, change_d, change_i, change_s, change_c, change_star) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
@@ -128,62 +127,9 @@ app.post("/api/submit-test", async (req, res) => {
   }
 });
 
-// 2B. ENDPOINT UNTUK HALAMAN REVIEW (dipanggil review.html)
-// Mengembalikan nama peserta + skor mentah (BUKAN gambar grafik -
-// gambar grafik diambil terpisah lewat /api/graphs/:attempt_id)
-// ==========================================
-app.get("/api/review/:attempt_id", async (req, res) => {
-  const { attempt_id } = req.params;
-
-  try {
-    const [rows] = await db.query(
-      `SELECT r.*, u.nama_lengkap
-       FROM results r
-       JOIN attempts a ON r.attempt_id = a.id
-       JOIN users u ON a.user_id = u.id
-       WHERE r.attempt_id = ?`,
-      [attempt_id],
-    );
-
-    if (rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Hasil tes untuk attempt_id ini belum ditemukan.",
-      });
-    }
-
-    const r = rows[0];
-
-    // Trait dominan ditentukan dari skor "Self/Core" (change_*),
-    // sama seperti logic interpret_profile() di Python
-    const changeScores = { D: r.change_d, I: r.change_i, S: r.change_s, C: r.change_c };
-    const dominant_type = Object.keys(changeScores).reduce((a, b) =>
-      changeScores[a] >= changeScores[b] ? a : b,
-    );
-
-    res.json({
-      success: true,
-      data: {
-        nama_lengkap: r.nama_lengkap,
-        score_d: r.most_d,
-        score_i: r.most_i,
-        score_s: r.most_s,
-        score_c: r.most_c,
-        dominant_type,
-        is_custom: false,
-
-        most: { D: r.most_d, I: r.most_i, S: r.most_s, C: r.most_c, star: r.most_star },
-        least: { D: r.least_d, I: r.least_i, S: r.least_s, C: r.least_c, star: r.least_star },
-        change: { D: r.change_d, I: r.change_i, S: r.change_s, C: r.change_c, star: r.change_star },
-      },
-    });
-  } catch (error) {
-    console.error("Error saat mengambil data review:", error);
-    res.status(500).json({
-      success: false,
-      message: "Gagal memuat hasil review dari database.",
-    });
-  }
+// Menyalakan server
+app.listen(3000, () => {
+  console.log("Server berjalan di port 3000");
 });
 
 // ==========================================
@@ -192,51 +138,23 @@ app.get("/api/review/:attempt_id", async (req, res) => {
 app.post("/api/register", async (req, res) => {
   const { nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin } =
     req.body;
-  let connection;
 
   try {
-    if (!nama_lengkap || !nama_lengkap.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "Nama lengkap wajib diisi.",
-      });
-    }
-
-    connection = await db.getConnection();
-    await connection.beginTransaction();
-
-    const [userResult] = await connection.query(
-      `INSERT INTO users
-       (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin)
-       VALUES (?, ?, ?, ?, ?)`,
-      [
-        nama_lengkap.trim(),
-        umur || null,
-        pendidikan_terakhir || null,
-        pekerjaan || null,
-        jenis_kelamin || null,
-      ],
+    // Masukkan data diri ke tabel `users`
+    const [result] = await db.query(
+      `INSERT INTO users (nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin) VALUES (?, ?, ?, ?, ?)`,
+      [nama_lengkap, umur, pendidikan_terakhir, pekerjaan, jenis_kelamin],
     );
 
-    const userId = userResult.insertId;
-    const [attemptResult] = await connection.query(
-      `INSERT INTO attempts (user_id, status) VALUES (?, 'in_progress')`,
-      [userId],
-    );
-
-    const attemptId = attemptResult.insertId;
-    await connection.commit();
+    // Ambil ID auto-increment yang baru saja digenerate sebagai attempt_id
+    const attemptId = result.insertId;
 
     res.json({
       success: true,
       message: "Data diri berhasil disimpan!",
       attempt_id: attemptId,
-      user_id: userId,
     });
   } catch (error) {
-    if (connection) {
-      await connection.rollback();
-    }
     console.error("Error saat menyimpan data diri:", error);
     res
       .status(500)
@@ -244,10 +162,6 @@ app.post("/api/register", async (req, res) => {
         success: false,
         message: "Gagal menyimpan data diri ke database.",
       });
-  } finally {
-    if (connection) {
-      connection.release();
-    }
   }
 });
 
