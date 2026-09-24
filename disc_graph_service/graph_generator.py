@@ -234,9 +234,9 @@ def generate_all_graphs(scoring_data: Dict, scale_table: Dict = None) -> Dict[st
         raw_values = [scoring_data[k] for k in style["keys"]]
         scale_columns = scale_table[style["sheet"]]
         images[graph_name] = _render_single_graph(raw_values, style, scale_columns)
-
     return images
 
+def interpret_profile(change_scores: Dict) -> Dict:
     mapping = {
         "D": change_scores.get("change_d", 0),
         "I": change_scores.get("change_i", 0),
@@ -253,7 +253,5 @@ def generate_all_graphs(scoring_data: Dict, scale_table: Dict = None) -> Dict[st
         "dominant_score": mapping[dominant],
         "secondary_trait": secondary,
         "secondary_score": mapping[secondary],
-        "summary": f"{descriptions[dominant]} Kombinasi dengan sisi {secondary} "
-                   f"juga cukup menonjol: {descriptions[secondary].lower()}",
         "raw_scores": mapping,
     }

@@ -163,9 +163,6 @@
             fillRow('least', data.least);
             fillRow('change', data.change);
 
-            document.getElementById('dominantProfile').textContent = data.dominant_type || 'D';
-            document.getElementById('profileDescription').textContent = data.description || 'Analisis kepribadian selesai.';
-
             if (data.is_custom) {
               document.getElementById('customNoteContainer').classList.remove('hidden');
             }
