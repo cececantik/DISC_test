@@ -1,360 +1,807 @@
 <!doctype html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DISC Personality Style Analysis</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>DISC Personality Test</title>
 
-    <!-- Google Fonts: Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-    <style>
-      body {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-      }
-      .brand-purple {
-        color: #6D28D9;
-      }
-      .bg-brand-purple {
-        background-color: #6D28D9;
-      }
-      .bg-brand-purple:hover {
-        background-color: #5B21B6;
-      }
-      .border-brand-purple {
-        border-color: #6D28D9;
-      }
-    </style>
-  </head>
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <body class="bg-slate-100 min-h-screen flex items-center justify-center p-0 sm:p-4 text-slate-800">
-    <!-- Main Mobile Container -->
-    <div
-      class="w-full max-w-sm min-h-screen sm:min-h-[660px] sm:h-auto bg-white sm:rounded-3xl shadow-xl sm:border sm:border-slate-100 px-6 py-6 flex flex-col justify-between relative overflow-hidden"
-    >
-      <!-- Top Navigation -->
-      <div class="flex items-center justify-between w-full">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    body {
+      font-family: "Plus Jakarta Sans", sans-serif;
+    }
+
+    .slide {
+      display: none;
+    }
+
+    .slide.active {
+      display: flex;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .dot {
+      transition: all 0.25s ease;
+    }
+
+    .dot.active {
+      width: 28px;
+      background: #6d28d9;
+    }
+  </style>
+</head>
+
+
+<body class="bg-slate-100 min-h-screen flex items-center justify-center">
+
+  <!-- MAIN CONTAINER -->
+  <main
+    class="
+      w-full
+      max-w-sm
+      min-h-screen
+      sm:min-h-[660px]
+      sm:h-[720px]
+      sm:rounded-3xl
+      bg-white
+      sm:shadow-xl
+      sm:border
+      sm:border-slate-100
+      relative
+      overflow-hidden
+      flex
+      flex-col
+    "
+  >
+
+    <!-- ========================= -->
+    <!-- TOP NAVIGATION -->
+    <!-- ========================= -->
+
+    <header class="px-6 pt-6">
+
+      <div class="flex items-center justify-between">
+
+        <!-- Back -->
         <button
-          id="btnMenu"
-          aria-label="Menu"
-          class="p-2 -ml-2 rounded-xl text-slate-700 hover:bg-slate-100 active:scale-95 transition"
+          id="btnBack"
+          class="
+            w-10 h-10
+            rounded-xl
+            flex items-center justify-center
+            text-slate-600
+            hover:bg-slate-100
+            transition
+            disabled:opacity-0
+          "
+          aria-label="Kembali"
         >
+
           <svg
-            class="w-6 h-6"
+            class="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
           >
-            <line x1="4" y1="6" x2="20" y2="6"></line>
-            <line x1="4" y1="12" x2="20" y2="12"></line>
-            <line x1="4" y1="18" x2="20" y2="18"></line>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
+
         </button>
-        <span class="text-xs font-semibold text-purple-700 uppercase tracking-widest bg-purple-50 px-2.5 py-1 rounded-full">
-          JobFit Style
-        </span>
+
+
+        <!-- Logo -->
+        <div
+          class="
+            text-xs
+            font-bold
+            tracking-widest
+            uppercase
+            text-purple-700
+            bg-purple-50
+            px-3
+            py-1.5
+            rounded-full
+          "
+        >
+          DISC TEST
+        </div>
+
+
+        <!-- Empty space -->
+        <div class="w-10"></div>
+
       </div>
 
-      <!-- Hero Content -->
-      <div class="flex flex-col items-center text-center mt-4">
-        <h1 class="text-5xl font-black text-purple-700 tracking-wider">
-          DISC
-        </h1>
 
-        <h2 class="text-xl font-extrabold text-slate-900 mt-2 leading-snug">
-          Personality Style<br />
-          Analysis
-        </h2>
+      <!-- Progress -->
+      <div class="flex justify-center gap-1.5 mt-5">
 
-        <p class="text-sm text-slate-500 mt-3 leading-relaxed max-w-[260px]">
-          Kenali gaya kepribadianmu<br />
-          dan maksimalkan potensimu<br />
-          dengan DISC Test.
+        <span
+          class="dot active h-1.5 w-5 rounded-full bg-purple-200"
+        ></span>
+
+        <span
+          class="dot h-1.5 w-5 rounded-full bg-purple-200"
+        ></span>
+
+        <span
+          class="dot h-1.5 w-5 rounded-full bg-purple-200"
+        ></span>
+
+        <span
+          class="dot h-1.5 w-5 rounded-full bg-purple-200"
+        ></span>
+
+      </div>
+
+    </header>
+
+
+
+    <!-- ========================= -->
+    <!-- SLIDES -->
+    <!-- ========================= -->
+
+    <section
+      id="slides"
+      class="
+        flex-1
+        px-6
+        flex
+        flex-col
+      "
+    >
+
+
+      <!-- ================================= -->
+      <!-- SLIDE 1 : WELCOME -->
+      <!-- ================================= -->
+
+      <div
+        class="
+          slide
+          active
+          flex-col
+          items-center
+          justify-center
+          text-center
+          flex-1
+        "
+      >
+
+        <!-- DISC Circle -->
+
+        <div
+          class="
+            w-36
+            h-36
+            rounded-full
+            bg-purple-50
+            flex
+            items-center
+            justify-center
+            mb-8
+          "
+        >
+
+          <div
+            class="
+              w-28
+              h-28
+              rounded-full
+              bg-purple-700
+              flex
+              items-center
+              justify-center
+              shadow-lg
+              shadow-purple-200
+            "
+          >
+
+            <span
+              class="
+                text-white
+                text-3xl
+                font-black
+                tracking-widest
+              "
+            >
+              DISC
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <p
+          class="
+            text-xs
+            font-bold
+            uppercase
+            tracking-[0.2em]
+            text-purple-600
+          "
+        >
+          Personality Assessment
         </p>
 
-        <!-- Illustration: 4 Characters (D, I, S, C) -->
-        <div class="mt-6 w-full flex items-end justify-center">
-          <svg
-            viewBox="0 0 320 200"
-            class="w-full max-w-[280px] h-auto drop-shadow-sm select-none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-                <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.08" />
-              </filter>
-            </defs>
 
-            <!-- Base Floor Shadow -->
-            <ellipse cx="160" cy="190" rx="140" ry="8" fill="#E2E8F0" opacity="0.6" />
+        <h1
+          class="
+            text-3xl
+            font-extrabold
+            text-slate-900
+            mt-3
+            leading-tight
+          "
+        >
+          Kenali Gaya
+          <br>
+          Kepribadianmu
+        </h1>
 
-            <!-- ================= CHARACTER D (RED - Dominance) ================= -->
-            <g transform="translate(18, 0)">
-              <ellipse cx="36" cy="46" rx="14" ry="16" fill="#881337" />
-              <circle cx="36" cy="48" r="12" fill="#FDDCB1" />
-              <path d="M24 44 Q36 34 48 44 Q44 36 36 36 Q28 36 24 44 Z" fill="#881337" />
-              <circle cx="32" cy="48" r="1.5" fill="#1E293B" />
-              <circle cx="40" cy="48" r="1.5" fill="#1E293B" />
-              <path d="M33 54 Q36 57 39 54" stroke="#1E293B" stroke-width="1.2" fill="none" stroke-linecap="round" />
-              <path d="M20 74 C20 62 52 62 52 74 L52 82 L20 82 Z" fill="#DC2626" />
-              <rect x="12" y="80" width="48" height="100" rx="24" fill="#DC2626" />
-              <path d="M12 136 H60 V160 C60 173.25 49.25 184 36 184 C22.75 184 12 173.25 12 160 Z" fill="#B91C1C" />
-              <text x="36" y="167" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="24" text-anchor="middle">D</text>
-            </g>
 
-            <!-- ================= CHARACTER I (YELLOW - Influence) ================= -->
-            <g transform="translate(88, 0)">
-              <ellipse cx="36" cy="38" rx="13" ry="15" fill="#1E293B" />
-              <circle cx="36" cy="40" r="12" fill="#FCE5CD" />
-              <path d="M24 38 Q36 24 48 38 Q45 28 36 28 Q27 28 24 38 Z" fill="#1E293B" />
-              <circle cx="32" cy="40" r="1.5" fill="#1E293B" />
-              <circle cx="40" cy="40" r="1.5" fill="#1E293B" />
-              <path d="M32 45 Q36 50 40 45" stroke="#1E293B" stroke-width="1.4" fill="none" stroke-linecap="round" />
-              <ellipse cx="36" cy="47" rx="2.5" ry="1.5" fill="#EF4444" opacity="0.6" />
-              <path d="M20 64 C20 54 52 54 52 64 L52 74 L20 74 Z" fill="#F59E0B" />
-              <rect x="12" y="72" width="48" height="110" rx="24" fill="#F59E0B" />
-              <path d="M12 136 H60 V160 C60 173.25 49.25 184 36 184 C22.75 184 12 173.25 12 160 Z" fill="#D97706" />
-              <text x="36" y="167" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="24" text-anchor="middle">I</text>
-            </g>
+        <p
+          class="
+            text-sm
+            text-slate-500
+            mt-4
+            leading-relaxed
+            max-w-[280px]
+          "
+        >
+          Pahami pola perilaku dan gaya interaksimu
+          melalui DISC Personality Test.
+        </p>
 
-            <!-- ================= CHARACTER S (GREEN - Steadiness) ================= -->
-            <g transform="translate(158, 0)">
-              <ellipse cx="36" cy="38" rx="15" ry="16" fill="#78350F" />
-              <circle cx="36" cy="40" r="12" fill="#FDDCB1" />
-              <path d="M22 36 Q36 28 50 36 Q46 30 36 30 Q26 30 22 36 Z" fill="#78350F" />
-              <circle cx="31" cy="40" r="3.5" fill="none" stroke="#1E293B" stroke-width="1" />
-              <circle cx="41" cy="40" r="3.5" fill="none" stroke="#1E293B" stroke-width="1" />
-              <line x1="34.5" y1="40" x2="37.5" y2="40" stroke="#1E293B" stroke-width="1" />
-              <circle cx="31" cy="40" r="1" fill="#1E293B" />
-              <circle cx="41" cy="40" r="1" fill="#1E293B" />
-              <path d="M33 46 Q36 49 39 46" stroke="#1E293B" stroke-width="1.2" fill="none" stroke-linecap="round" />
-              <path d="M20 64 C20 54 52 54 52 64 L52 74 L20 74 Z" fill="#10B981" />
-              <rect x="12" y="72" width="48" height="110" rx="24" fill="#10B981" />
-              <path d="M12 136 H60 V160 C60 173.25 49.25 184 36 184 C22.75 184 12 173.25 12 160 Z" fill="#059669" />
-              <text x="36" y="167" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="24" text-anchor="middle">S</text>
-            </g>
-
-            <!-- ================= CHARACTER C (BLUE - Conscientiousness) ================= -->
-            <g transform="translate(228, 0)">
-              <ellipse cx="36" cy="38" rx="14" ry="15" fill="#0F172A" />
-              <circle cx="36" cy="40" r="12" fill="#FCE5CD" />
-              <path d="M23 38 Q34 26 49 38 Q45 28 36 28 Q26 28 23 38 Z" fill="#0F172A" />
-              <circle cx="32" cy="40" r="1.5" fill="#1E293B" />
-              <circle cx="40" cy="40" r="1.5" fill="#1E293B" />
-              <path d="M33 46 Q36 48 39 46" stroke="#1E293B" stroke-width="1.2" fill="none" stroke-linecap="round" />
-              <path d="M20 64 C20 54 52 54 52 64 L52 74 L20 74 Z" fill="#3B82F6" />
-              <rect x="12" y="72" width="48" height="110" rx="24" fill="#3B82F6" />
-              <path d="M12 136 H60 V160 C60 173.25 49.25 184 36 184 C22.75 184 12 173.25 12 160 Z" fill="#2563EB" />
-              <text x="36" y="167" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="24" text-anchor="middle">C</text>
-            </g>
-          </svg>
-        </div>
       </div>
 
-      <!-- Action Buttons -->
-      <div class="w-full mt-6 space-y-3 pb-2">
-        <!-- Primary Button -> menuju data-diri.html -->
-        <a
-          href="data-diri.html"
-          class="w-full bg-[#6D28D9] hover:bg-[#5B21B6] text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-purple-200 text-center transition-all duration-200 active:scale-[0.98] flex items-center justify-center gap-2"
-        >
-          <span>Mulai Test</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-          </svg>
-        </a>
+      <!-- ================================= -->
+      <!-- SLIDE 3 : HOW TO -->
+      <!-- ================================= -->
 
-        <!-- Secondary Button -->
-        <button
-          id="btnTentang"
-          type="button"
-          class="w-full bg-white border border-slate-200 text-slate-700 font-semibold py-3 px-6 rounded-xl hover:bg-slate-50 hover:border-purple-200 active:bg-slate-100 transition-all duration-200 text-center block"
-        >
-          Tentang DISC
-        </button>
-      </div>
-
-      <!-- Modal "Tentang DISC" -->
       <div
-        id="modalTentang"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-200"
+        class="
+          slide
+          flex-col
+          justify-center
+          flex-1
+        "
       >
-        <div
-          class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-200 space-y-4 max-h-[90vh] overflow-y-auto"
-        >
-          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-[#6D28D9]"></span>
-              <h3 class="font-extrabold text-lg text-slate-900">Apa itu DISC Test?</h3>
-            </div>
-            <button
-              id="btnCloseModal"
-              class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition"
+
+        <div class="text-center mb-8">
+
+          <div
+            class="
+              mx-auto
+              w-16
+              h-16
+              rounded-2xl
+              bg-purple-50
+              text-purple-700
+              flex
+              items-center
+              justify-center
+              mb-5
+            "
+          >
+
+            <svg
+              class="w-8 h-8"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="1.8"
             >
-              ✕
-            </button>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12.75l2 2 4-4m5.25 1.5a8.25 8.25 0 11-16.5 0 8.25 8.25 0 0116.5 0z"
+              />
+            </svg>
+
           </div>
 
-          <p class="text-xs leading-relaxed text-slate-600">
-            DISC adalah alat asesmen kepribadian populer yang membagi perilaku manusia ke dalam 4 dimensi utama:
+          <h2
+            class="
+              text-2xl
+              font-extrabold
+              text-slate-900
+            "
+          >
+            Cara Mengerjakan
+          </h2>
+
+
+          <p
+            class="
+              text-sm
+              text-slate-500
+              mt-3
+              leading-relaxed
+            "
+          >
+            Setiap kotak berisi beberapa pernyataan.
+            Pilih dua jawaban yang paling sesuai
+            dengan dirimu.
           </p>
 
-          <div class="space-y-2.5 text-xs">
-            <div class="p-3 bg-red-50 border border-red-100 rounded-xl flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-red-600 text-white font-black flex items-center justify-center shrink-0 text-sm">
-                D
-              </div>
-              <div>
-                <p class="font-bold text-red-900">Dominance (Dominan)</p>
-                <p class="text-red-700 text-[11px] mt-0.5">Tegas, berorientasi hasil, berani mengambil keputusan & risiko.</p>
-              </div>
-            </div>
-
-            <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-amber-500 text-white font-black flex items-center justify-center shrink-0 text-sm">
-                I
-              </div>
-              <div>
-                <p class="font-bold text-amber-900">Influence (Pengaruh)</p>
-                <p class="text-amber-700 text-[11px] mt-0.5">Antusias, ramah, komunikatif, persuasif, dan senang bersosialisasi.</p>
-              </div>
-            </div>
-
-            <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-xl flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 text-sm">
-                S
-              </div>
-              <div>
-                <p class="font-bold text-emerald-900">Steadiness (Kestabilan)</p>
-                <p class="text-emerald-700 text-[11px] mt-0.5">Sabar, tenang, pendengar yang baik, setia, dan menyukai harmoni.</p>
-              </div>
-            </div>
-
-            <div class="p-3 bg-blue-50 border border-blue-100 rounded-xl flex gap-3">
-              <div class="w-8 h-8 rounded-lg bg-blue-600 text-white font-black flex items-center justify-center shrink-0 text-sm">
-                C
-              </div>
-              <div>
-                <p class="font-bold text-blue-900">Conscientiousness (Kecermatan)</p>
-                <p class="text-blue-700 text-[11px] mt-0.5">Teliti, analitis, sistematis, taat standar, dan mengutamakan akurasi.</p>
-              </div>
-            </div>
-          </div>
-
-          <button
-            id="btnPaham"
-            class="w-full bg-[#6D28D9] hover:bg-[#5B21B6] text-white font-bold py-3 rounded-xl transition active:scale-[0.98]"
-          >
-            Mengerti & Lanjutkan
-          </button>
         </div>
-      </div>
 
-      <!-- Drawer Menu Sederhana -->
-      <div
-        id="drawerMenu"
-        class="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs z-40 hidden opacity-0 transition-opacity duration-200"
-      >
+        <!-- MOST -->
+
         <div
-          id="drawerContent"
-          class="bg-white w-64 h-full p-6 shadow-2xl flex flex-col justify-between -translate-x-full transition-transform duration-200"
+          class="
+            p-5
+            rounded-2xl
+            bg-purple-50
+            border
+            border-purple-100
+            mb-3
+          "
         >
-          <div class="space-y-6">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-              <span class="text-xl font-black text-purple-700">DISC Test</span>
-              <button id="btnCloseDrawer" class="p-1 text-slate-400 hover:text-slate-700">✕</button>
+
+          <div class="flex items-center gap-3">
+
+            <div
+              class="
+                w-11 h-11
+                rounded-xl
+                bg-purple-700
+                text-white
+                font-black
+                flex
+                items-center
+                justify-center
+              "
+            >
+              +
             </div>
-            <nav class="space-y-2 text-sm font-medium">
-              <a href="index.html" class="flex items-center gap-3 p-2.5 rounded-xl bg-purple-50 text-purple-700 font-bold">
-                <span>🏠</span> Beranda
-              </a>
-              <a href="data-diri.html" class="flex items-center gap-3 p-2.5 rounded-xl text-slate-700 hover:bg-slate-50">
-                <span>📝</span> Mulai Tes
-              </a>
-              <button id="menuItemTentang" class="w-full flex items-center gap-3 p-2.5 rounded-xl text-slate-700 hover:bg-slate-50 text-left">
-                <span>💡</span> Tentang DISC
-              </button>
-            </nav>
+
+            <div>
+
+              <p
+                class="
+                  font-bold
+                  text-purple-900
+                "
+              >
+                Most (+)
+              </p>
+
+              <p
+                class="
+                  text-xs
+                  text-purple-700
+                  mt-0.5
+                "
+              >
+                Pernyataan yang paling menggambarkan dirimu.
+              </p>
+
+            </div>
+
           </div>
-          <div class="text-center text-[11px] text-slate-400">
-            DISC Assessment &copy; 2026
-          </div>
+
         </div>
+
+
+        <!-- LEAST -->
+
+        <div
+          class="
+            p-5
+            rounded-2xl
+            bg-slate-50
+            border
+            border-slate-200
+          "
+        >
+
+          <div class="flex items-center gap-3">
+
+            <div
+              class="
+                w-11 h-11
+                rounded-xl
+                bg-slate-700
+                text-white
+                font-black
+                flex
+                items-center
+                justify-center
+              "
+            >
+              −
+            </div>
+
+            <div>
+
+              <p
+                class="
+                  font-bold
+                  text-slate-900
+                "
+              >
+                Least (-)
+              </p>
+
+              <p
+                class="
+                  text-xs
+                  text-slate-600
+                  mt-0.5
+                "
+              >
+                Pernyataan yang paling tidak menggambarkan dirimu.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
-    </div>
 
-    <!-- Scripts -->
-    <script>
-      const modalTentang = document.getElementById('modalTentang');
-      const btnTentang = document.getElementById('btnTentang');
-      const btnCloseModal = document.getElementById('btnCloseModal');
-      const btnPaham = document.getElementById('btnPaham');
 
-      const btnMenu = document.getElementById('btnMenu');
-      const drawerMenu = document.getElementById('drawerMenu');
-      const drawerContent = document.getElementById('drawerContent');
-      const btnCloseDrawer = document.getElementById('btnCloseDrawer');
-      const menuItemTentang = document.getElementById('menuItemTentang');
 
-      function openModal() {
-        modalTentang.classList.remove('hidden');
-        setTimeout(() => {
-          modalTentang.classList.remove('opacity-0');
-          modalTentang.querySelector('div').classList.remove('scale-95');
-        }, 10);
-      }
+      <!-- ================================= -->
+      <!-- SLIDE 4 : START -->
+      <!-- ================================= -->
 
-      function closeModal() {
-        modalTentang.classList.add('opacity-0');
-        modalTentang.querySelector('div').classList.add('scale-95');
-        setTimeout(() => {
-          modalTentang.classList.add('hidden');
-        }, 200);
-      }
+      <div
+        class="
+          slide
+          flex-col
+          items-center
+          justify-center
+          text-center
+          flex-1
+        "
+      >
 
-      btnTentang.addEventListener('click', openModal);
-      btnCloseModal.addEventListener('click', closeModal);
-      btnPaham.addEventListener('click', closeModal);
-      modalTentang.addEventListener('click', (e) => {
-        if (e.target === modalTentang) closeModal();
+        <div
+          class="
+            w-28
+            h-28
+            rounded-full
+            bg-purple-50
+            flex
+            items-center
+            justify-center
+            mb-8
+          "
+        >
+
+          <div
+            class="
+              w-20
+              h-20
+              rounded-full
+              bg-purple-700
+              text-white
+              flex
+              items-center
+              justify-center
+              shadow-lg
+              shadow-purple-200
+            "
+          >
+
+            <svg
+              class="w-9 h-9"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
+
+          </div>
+
+        </div>
+
+
+        <h2
+          class="
+            text-3xl
+            font-extrabold
+            text-slate-900
+          "
+        >
+          Siap Memulai?
+        </h2>
+
+
+        <p
+          class="
+            text-sm
+            text-slate-500
+            mt-4
+            leading-relaxed
+            max-w-[280px]
+          "
+        >
+          Jawablah setiap pernyataan sesuai dengan
+          kondisi dirimu saat ini.
+        </p>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- BOTTOM ACTION -->
+    <!-- ========================= -->
+
+    <footer class="px-6 pb-6">
+
+      <button
+        id="btnNext"
+        class="
+          w-full
+          bg-purple-700
+          hover:bg-purple-800
+          text-white
+          font-bold
+          py-3.5
+          rounded-xl
+          shadow-lg
+          shadow-purple-200
+          transition
+          active:scale-[0.98]
+          flex
+          items-center
+          justify-center
+          gap-2
+        "
+      >
+
+        <span id="nextText">
+          Selanjutnya
+        </span>
+
+        <svg
+          id="nextIcon"
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2.5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+          />
+        </svg>
+
+      </button>
+
+
+      <p
+        id="slideCounter"
+        class="
+          text-center
+          text-[10px]
+          text-slate-400
+          mt-3
+        "
+      >
+        1 dari 4
+      </p>
+
+    </footer>
+
+  </main>
+
+  <!-- ========================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ========================= -->
+
+  <script>
+
+    const slides =
+      document.querySelectorAll(".slide");
+
+    const dots =
+      document.querySelectorAll(".dot");
+
+    const btnNext =
+      document.getElementById("btnNext");
+
+    const btnBack =
+      document.getElementById("btnBack");
+
+    const nextText =
+      document.getElementById("nextText");
+
+    const nextIcon =
+      document.getElementById("nextIcon");
+
+    const slideCounter =
+      document.getElementById("slideCounter");
+
+
+    let currentSlide = 0;
+
+
+    function updateSlide() {
+
+      // Hide semua slide
+      slides.forEach((slide, index) => {
+
+        slide.classList.toggle(
+          "active",
+          index === currentSlide
+        );
+
       });
 
-      function openDrawer() {
-        drawerMenu.classList.remove('hidden');
-        setTimeout(() => {
-          drawerMenu.classList.remove('opacity-0');
-          drawerContent.classList.remove('-translate-x-full');
-        }, 10);
+
+      // Update indicator
+      dots.forEach((dot, index) => {
+
+        dot.classList.toggle(
+          "active",
+          index === currentSlide
+        );
+
+      });
+
+
+      // Update counter
+      slideCounter.textContent =
+        `${currentSlide + 1} dari ${slides.length}`;
+
+
+      // Button back
+      btnBack.disabled =
+        currentSlide === 0;
+
+
+      // Button text
+      if (currentSlide === slides.length - 1) {
+
+        nextText.textContent =
+          "Mulai Tes";
+
+        nextIcon.innerHTML = `
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+          />
+        `;
+
+      } else {
+
+        nextText.textContent =
+          "Selanjutnya";
+
       }
 
-      function closeDrawer() {
-        drawerMenu.classList.add('opacity-0');
-        drawerContent.classList.add('-translate-x-full');
-        setTimeout(() => {
-          drawerMenu.classList.add('hidden');
-        }, 200);
-      }
+    }
 
-      btnMenu.addEventListener('click', openDrawer);
-      btnCloseDrawer.addEventListener('click', closeDrawer);
-      drawerMenu.addEventListener('click', (e) => {
-        if (e.target === drawerMenu) closeDrawer();
-      });
-      menuItemTentang.addEventListener('click', () => {
-        closeDrawer();
-        setTimeout(openModal, 200);
-      });
-    </script>
-  </body>
+
+    btnNext.addEventListener(
+      "click",
+      () => {
+
+        // Jika belum slide terakhir
+        if (
+          currentSlide <
+          slides.length - 1
+        ) {
+
+          currentSlide++;
+
+          updateSlide();
+
+          return;
+        }
+
+
+        // Jika slide terakhir
+        // masuk ke halaman data diri
+
+        window.location.href =
+          "fontend/data-diri.html";
+
+      }
+    );
+
+
+    btnBack.addEventListener(
+      "click",
+      () => {
+
+        if (currentSlide > 0) {
+
+          currentSlide--;
+
+          updateSlide();
+
+        }
+
+      }
+    );
+
+
+    // Keyboard navigation
+    document.addEventListener(
+      "keydown",
+      (event) => {
+
+        if (
+          event.key === "ArrowRight" &&
+          currentSlide < slides.length - 1
+        ) {
+
+          currentSlide++;
+
+          updateSlide();
+
+        }
+
+
+        if (
+          event.key === "ArrowLeft" &&
+          currentSlide > 0
+        ) {
+
+          currentSlide--;
+
+          updateSlide();
+
+        }
+
+      }
+    );
+
+
+    // Initial
+    updateSlide();
+
+  </script>
+
+</body>
 </html>
