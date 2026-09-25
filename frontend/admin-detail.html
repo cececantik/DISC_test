@@ -46,24 +46,25 @@
   <body class="bg-slate-100 min-h-screen text-slate-800">
     <div class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <!-- Top Bar -->
-      <div class="no-print flex items-center justify-between mb-6">
+      <div class="no-print flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <a
           href="admin.html"
           class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-purple-700 transition-colors"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
-          Kembali ke Daftar Peserta
+          <span class="sm:hidden">Kembali</span>
+          <span class="hidden sm:inline">Kembali ke Daftar Peserta</span>
         </a>
 
         <div class="flex items-center gap-2">
           <button
             id="btnPrint"
             type="button"
-            class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-3.5 py-2 rounded-xl transition-colors"
+            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 px-3.5 py-2 rounded-xl transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.32 0a42.744 42.744 0 00-11.32 0m11.32 0l-.229-2.523M6.34 18l.229-2.523M6.34 18H4.5a1.5 1.5 0 01-1.5-1.5v-4.5a1.5 1.5 0 011.5-1.5h15a1.5 1.5 0 011.5 1.5v4.5a1.5 1.5 0 01-1.5 1.5h-1.84m-12.32 0h12.32m-12.32 0l.229-2.523m11.86 2.523l-.229-2.523M6.569 8.25l.229-3.523a1.125 1.125 0 011.121-1.227h8.163a1.125 1.125 0 011.12 1.227l.23 3.523" />
             </svg>
             Cetak
@@ -71,12 +72,12 @@
           <button
             id="btnDownload"
             type="button"
-            class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3.5 py-2 rounded-xl shadow-lg shadow-purple-200 transition-colors"
+            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-[#6D28D9] hover:bg-[#5B21B6] px-3.5 py-2 rounded-xl shadow-lg shadow-purple-200 transition-colors"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-            <span id="btnDownloadLabel">Download PDF</span>
+            <span id="btnDownloadLabel" class="truncate">Download PDF</span>
           </button>
         </div>
       </div>

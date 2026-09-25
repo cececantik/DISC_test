@@ -42,23 +42,35 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <span
-            class="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-100"
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <span
+              class="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-100"
+            >
+              Admin Panel
+            </span>
+            <h1 class="text-xl sm:text-3xl font-extrabold text-slate-900 mt-3">
+              Data Peserta Tes DISC
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+              Daftar peserta yang sudah menyelesaikan tes DISC.
+            </p>
+          </div>
+
+          <!-- Logout (mobile: top-right, next to title) -->
+          <button
+            id="btnLogout"
+            type="button"
+            title="Logout"
+            class="sm:hidden shrink-0 px-3 py-2 text-xs font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-red-600 rounded-xl transition-colors"
           >
-            Admin Panel
-          </span>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-3">
-            Data Peserta Tes DISC
-          </h1>
-          <p class="text-sm text-slate-500 mt-1">
-            Daftar peserta yang sudah menyelesaikan tes DISC.
-          </p>
+            Logout
+          </button>
         </div>
 
-        <!-- Search -->
-        <div class="w-full sm:w-72">
-          <div class="relative">
+        <!-- Search + Logout (desktop) -->
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <div class="relative flex-1 sm:w-72">
             <svg
               class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
               fill="none"
@@ -80,10 +92,10 @@
             />
           </div>
           <button
-            id="btnLogout"
+            id="btnLogoutDesktop"
             type="button"
             title="Logout"
-            class="shrink-0 px-3 py-2.5 text-xs font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-red-600 rounded-xl transition-colors"
+            class="hidden sm:inline-flex shrink-0 px-3 py-2.5 text-xs font-bold text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 hover:text-red-600 rounded-xl transition-colors"
           >
             Logout
           </button>
@@ -117,22 +129,28 @@
           </p>
         </div>
 
-        <!-- Table -->
-        <div id="tableWrapper" class="hidden overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider text-left">
-                <th class="px-5 py-3">Nama Lengkap</th>
-                <th class="px-5 py-3">Umur</th>
-                <th class="px-5 py-3">Pekerjaan</th>
-                <th class="px-5 py-3">Jenis Kelamin</th>
-                <th class="px-5 py-3">Tanggal Tes</th>
-                <th class="px-5 py-3 text-center">Tipe Dominan</th>
-                <th class="px-5 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
+        <!-- Table (desktop / tablet) + Card list (mobile) -->
+        <div id="tableWrapper" class="hidden">
+          <!-- Desktop / tablet: table -->
+          <div class="hidden sm:block overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-wider text-left">
+                  <th class="px-5 py-3">Nama Lengkap</th>
+                  <th class="px-5 py-3">Umur</th>
+                  <th class="px-5 py-3">Pekerjaan</th>
+                  <th class="px-5 py-3">Jenis Kelamin</th>
+                  <th class="px-5 py-3">Tanggal Tes</th>
+                  <th class="px-5 py-3 text-center">Tipe Dominan</th>
+                  <th class="px-5 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+
+          <!-- Mobile: card list -->
+          <div id="cardWrapper" class="sm:hidden divide-y divide-slate-100"></div>
         </div>
 
         <!-- Pagination Footer -->
@@ -140,20 +158,20 @@
           id="paginationFooter"
           class="hidden flex flex-col sm:flex-row items-center justify-between gap-3 px-5 py-4 border-t border-slate-100"
         >
-          <p id="paginationInfo" class="text-xs text-slate-500"></p>
-          <div class="flex items-center gap-2">
+          <p id="paginationInfo" class="text-xs text-slate-500 text-center sm:text-left"></p>
+          <div class="flex items-center justify-center gap-2 w-full sm:w-auto">
             <button
               id="btnPrev"
               type="button"
-              class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              class="flex-1 sm:flex-none px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               &larr; Sebelumnya
             </button>
-            <span id="pageIndicator" class="text-xs font-bold text-slate-700 px-2"></span>
+            <span id="pageIndicator" class="text-xs font-bold text-slate-700 px-2 shrink-0"></span>
             <button
               id="btnNext"
               type="button"
-              class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              class="flex-1 sm:flex-none px-3 py-1.5 text-xs font-semibold rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Berikutnya &rarr;
             </button>
@@ -178,6 +196,7 @@
       const emptyState = document.getElementById("emptyState");
       const tableWrapper = document.getElementById("tableWrapper");
       const tableBody = document.getElementById("tableBody");
+      const cardWrapper = document.getElementById("cardWrapper");
       const paginationFooter = document.getElementById("paginationFooter");
       const paginationInfo = document.getElementById("paginationInfo");
       const pageIndicator = document.getElementById("pageIndicator");
@@ -227,6 +246,33 @@
               </a>
             </td>
           </tr>
+        `,
+          )
+          .join("");
+
+        // Versi mobile: kartu, bukan tabel lebar
+        cardWrapper.innerHTML = data
+          .map(
+            (p) => `
+          <div class="p-4 flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="font-semibold text-slate-900 text-sm truncate">${p.nama_lengkap ?? "-"}</p>
+              <p class="text-xs text-slate-500 mt-0.5">
+                ${p.umur ?? "-"} th &bull; ${p.pekerjaan ?? "-"} &bull; ${p.jenis_kelamin ?? "-"}
+              </p>
+              <p class="text-xs text-slate-400 mt-1">${formatTanggal(p.tanggal_tes)}</p>
+              <a
+                href="admin-detail.html?attempt_id=${p.attempt_id}"
+                class="inline-flex items-center gap-1 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-lg transition-colors mt-2.5"
+              >
+                Lihat Detail
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
+            </div>
+            <span class="type-badge type-${p.dominant_type} shrink-0">${p.dominant_type ?? "-"}</span>
+          </div>
         `,
           )
           .join("");
@@ -299,6 +345,9 @@
       });
 
       document.getElementById("btnLogout").addEventListener("click", () => {
+        adminLogout();
+      });
+      document.getElementById("btnLogoutDesktop").addEventListener("click", () => {
         adminLogout();
       });
 
