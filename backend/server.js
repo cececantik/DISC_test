@@ -4,17 +4,21 @@ const db = require("./db");
 
 const { getParticipants, getParticipantDetail } = require("./admin_controller");
 const { getGraphs } = require("./graph_controller");
+const { login } = require("./auth_controller");
+const { requireAdminAuth } = require("./auth_middleware");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+app.post("/api/admin/login", login);
+
 // ==========================================
 // ROUTE ADMIN
 // ==========================================
-app.get("/api/admin/participants", getParticipants);
-app.get("/api/admin/participants/:attempt_id", getParticipantDetail);
+app.get("/api/admin/participants", requireAdminAuth, getParticipants);
+app.get("/api/admin/participants/:attempt_id", requireAdminAuth, getParticipantDetail);
 
 // ==========================================
 // ROUTE GRAFIK DISC

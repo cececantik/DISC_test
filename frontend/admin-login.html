@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Admin - Tes DISC</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-6">
+        <span
+          class="text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-100"
+        >
+          Admin Panel
+        </span>
+        <h1 class="text-2xl font-extrabold text-slate-900 mt-3">Login Admin</h1>
+        <p class="text-sm text-slate-500 mt-1">Masuk untuk mengelola data peserta tes DISC.</p>
+      </div>
+
+      <form
+        id="loginForm"
+        class="bg-white border border-slate-100 rounded-2xl shadow-sm p-6 space-y-4"
+      >
+        <div>
+          <label for="username" class="block text-xs font-bold text-slate-600 mb-1.5">
+            Username
+          </label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            autocomplete="username"
+            class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
+            placeholder="admin"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-bold text-slate-600 mb-1.5">
+            Password
+          </label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            autocomplete="current-password"
+            class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400"
+            placeholder="••••••••"
+          />
+        </div>
+
+        <div
+          id="errorBox"
+          class="hidden bg-red-50 border border-red-200 text-red-700 text-xs p-3 rounded-xl"
+        ></div>
+
+        <button
+          id="btnSubmit"
+          type="submit"
+          class="w-full bg-[#6D28D9] hover:bg-[#5B21B6] text-white text-sm font-bold py-2.5 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Masuk
+        </button>
+      </form>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:3000/api";
+
+      const form = document.getElementById("loginForm");
+      const errorBox = document.getElementById("errorBox");
+      const btnSubmit = document.getElementById("btnSubmit");
+
+      // Kalau udah pernah login sebelumnya (token masih ada), langsung
+      // lempar ke admin.html, nggak perlu login ulang.
+      if (localStorage.getItem("admin_token")) {
+        window.location.href = "admin.html";
+      }
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorBox.classList.add("hidden");
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = "Memproses...";
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+
+        try {
+          const res = await fetch(`${API_URL}/admin/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+          const result = await res.json();
+
+          if (!res.ok || !result.success) {
+            errorBox.textContent = result.message || "Login gagal.";
+            errorBox.classList.remove("hidden");
+            return;
+          }
+
+          localStorage.setItem("admin_token", result.token);
+          localStorage.setItem("admin_username", result.username);
+
+          window.location.href = "admin.html";
+        } catch (err) {
+          console.error("Gagal login:", err);
+          errorBox.textContent = "Tidak dapat terhubung ke server backend.";
+          errorBox.classList.remove("hidden");
+        } finally {
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = "Masuk";
+        }
+      });
+    </script>
+  </body>
+</html>

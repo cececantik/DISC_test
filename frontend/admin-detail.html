@@ -91,13 +91,13 @@
           <span
             class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100"
           >
-            Tes Selesai 🎉
+            Tes Selesai
           </span>
           <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-3">
             Hasil Analisis DISC
           </h1>
           <p id="participantName" class="text-xs sm:text-sm text-slate-500 mt-1">
-            Memuat data peserta...
+            Memuat data peserta
           </p>
         </div>
 
@@ -209,7 +209,9 @@
       </div>
     </div>
 
-    <script>
+    <script src="admin-auth.js"></script>
+    <script> 
+    requireAdminAuth();     
       const API_URL = "http://localhost:3000/api";
 
       function getAttemptId() {
