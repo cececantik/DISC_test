@@ -248,7 +248,7 @@
 
         try {
           // 1. Ambil data diri + skor peserta (endpoint khusus admin)
-          const response = await fetch(`${API_URL}/admin/participants/${attempt_id}`);
+          const response = await adminFetch(`${API_URL}/admin/participants/${attempt_id}`);
           const result = await response.json();
 
           document.getElementById("loadingState").classList.add("hidden");
